@@ -1,4 +1,12 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Bubblevel_MatchService.Context;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add configuration to Sql Server
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnect"))
+);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
