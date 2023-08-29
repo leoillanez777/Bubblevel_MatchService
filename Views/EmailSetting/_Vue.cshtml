@@ -1,0 +1,24 @@
+﻿<script>
+    const { createApp, ref } = Vue
+    const { createVuetify } = Vuetify
+    document.addEventListener('DOMContentLoaded', () => {
+        const vuetify = createVuetify()
+
+        createApp({
+            setup() {
+                const userName = ref('@Model.Username')
+                const password = ref('@Model.Password')
+                const visible = ref(false)
+
+                return {
+                    userName, password, visible
+                }
+            }
+        }).use(vuetify).mount('#app')
+    })
+</script>
+
+
+
+
+

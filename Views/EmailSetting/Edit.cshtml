@@ -1,0 +1,79 @@
+@model Bubblevel_MatchService.Models.EmailSetting
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>EmailSetting</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Host" class="control-label"></label>
+                <input asp-for="Host" class="form-control" />
+                <span asp-validation-for="Host" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Port" class="control-label"></label>
+                <input asp-for="Port" class="form-control" />
+                <span asp-validation-for="Port" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input id="Username" name="Username" class="form-control" type="hidden" v-model="userName" />
+                <v-text-field density="compact" asp-for="Username"
+                              placeholder="Email address"
+                              v-model="userName"
+                              prepend-inner-icon="mdi-email-outline"
+                              variant="solo">
+                </v-text-field>
+
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input id="Password" name="Password" class="form-control" type="hidden" v-model="password" />
+                <v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                              v-model="password"
+                              :type="visible ? 'text' : 'password'"
+                              density="compact"
+                              placeholder="Enter your password"
+                              prepend-inner-icon="mdi-lock-outline"
+                              variant="solo"
+                              v-bind:click:append-inner="visible = !visible"></v-text-field>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="UseSsl" /> @Html.DisplayNameFor(model => model.UseSsl)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="UseTls" /> @Html.DisplayNameFor(model => model.UseTls)
+                </label>
+            </div>
+            <div class="form-group mt-2 mb-3">
+                <v-btn prepend-icon="mdi-pencil" variant="outlined" color="blue-darken-1">
+                    Save
+                </v-btn>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("~/Views/EmailSetting/_Vue.cshtml");
+    }
+}

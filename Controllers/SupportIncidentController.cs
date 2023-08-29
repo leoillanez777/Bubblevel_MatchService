@@ -58,22 +58,31 @@ public class SupportIncidentController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Create([Bind("Id,Summary,IsResolved,TotalDebited,CustomerId,ProjectId")] SupportIncident supportIncident)
+  public async Task<IActionResult> Create([Bind("Id,Summary,CustomerId")] SupportIncident supportIncident)
   {
     if (supportIncident.CustomerId != 0) {
       supportIncident.Customer = await _context.Customer.FindAsync(supportIncident.CustomerId);
     }
-    if (supportIncident.ProjectId != 0) {
-      supportIncident.Project = await _context.Project.FindAsync(supportIncident.ProjectId);
-    }
-    if (ModelState.IsValid && supportIncident.Customer != null && supportIncident.Project != null) {
-      // 1) Enviar email a cliente si tiene intervenciones...
-      // 2) verificar si tiene plan activo de soporte.
-      //  2a) NO: Enviar email a finances.
-      //  2b) SI: 
-      _context.Add(supportIncident);
-      await _context.SaveChangesAsync();
-      return RedirectToAction(nameof(Index));
+    if (ModelState.IsValid) {
+      using var dbContextTransaction = _context.Database.BeginTransaction();
+      try {
+        supportIncident.State = "Pending approval";
+        _context.Add(supportIncident);
+        await _context.SaveChangesAsync();
+        await _email.SendEmailAsync(
+          supportIncident.Customer!.Email,
+          "Step 1", supportIncident.Summary);
+
+        await dbContextTransaction.CommitAsync();
+
+        return RedirectToAction(nameof(Index));
+      }
+      catch (Exception ex) {
+        await dbContextTransaction.RollbackAsync();
+        // TODO: Missing an exception middleware.
+        throw new Exception(ex.Message, ex);
+      }
+      
     }
 
     return View(supportIncident);

@@ -1,11 +1,12 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bubblevel_MatchService.Models
 {
-  [Keyless]
   public class EmailSetting
   {
+    [Key]
+    public int Id { get; set; }
     public string Host { get; set; } = null!;
     public int Port { get; set; }
     public string Username { get; set; } = null!;

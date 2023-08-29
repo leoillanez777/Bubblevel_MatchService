@@ -10,6 +10,7 @@ namespace Bubblevel_MatchService.Models
     [Display(Name = "Incident Number")]
     public int Id { get; set; }
 
+    [Required]
     public string Summary { get; set; } = null!;
 
     [Column(TypeName = "decimal(18, 2)")]

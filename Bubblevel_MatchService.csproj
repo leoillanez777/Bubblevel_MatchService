@@ -41,6 +41,7 @@
     <Folder Include="Services\Interfaces\" />
     <Folder Include="wwwroot\lib\quill\" />
     <Folder Include="wwwroot\lib\jquery-validation\dist\localization\" />
+    <Folder Include="wwwroot\lib\tailwindcss\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\lib\vuejs\" />
@@ -51,5 +52,6 @@
     <Content Remove="wwwroot\lib\vuetify\scss\" />
     <Content Remove="wwwroot\lib\quill\" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\localization\" />
+    <Content Remove="wwwroot\lib\tailwindcss\" />
   </ItemGroup>
 </Project>
