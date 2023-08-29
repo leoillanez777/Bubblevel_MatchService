@@ -1,0 +1,13 @@
+﻿@model X.PagedList.IPagedList<object>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination @(Model.PageCount == 0 ? "visually-hidden":"")">
+        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+        </li>
+        <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+        </li>
+    </ul>
+</nav>
+

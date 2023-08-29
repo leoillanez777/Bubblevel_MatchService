@@ -1,0 +1,74 @@
+@model X.PagedList.IPagedList<Bubblevel_MatchService.Models.SupportIncident>
+
+@{
+    ViewData["Title"] = "Support Incident";
+}
+
+<h1>Support Incident</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                State
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Summary)
+            </th>
+            <th colspan="2">
+                Customer
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Comments)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Summary)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer!.Email)
+                </td>
+                <td>
+                    @if (item.Comments != null)
+                    {
+                        @foreach (var c in item.Comments)
+                        {
+                            <div class="badge bg-primary text-wrap fw-lighter" style="width: 6rem;">
+                                @c.Text
+                            </div>
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="pagination">
+    <partial name="_PaginationPartial" model="@Model" />
+</div>

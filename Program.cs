@@ -1,4 +1,6 @@
 ﻿using Bubblevel_MatchService.Context;
+using Bubblevel_MatchService.Services;
+using Bubblevel_MatchService.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // Add services to the container.
+builder.Services.AddTransient<IEmailSettingsRepository, EmailSettingsRepositoryService>();
+builder.Services.AddTransient<IEmailSender, EmailSenderService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

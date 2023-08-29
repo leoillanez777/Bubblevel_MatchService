@@ -1,0 +1,91 @@
+﻿<link href="~/lib/quill/snow.css" rel="stylesheet">
+<script src="~/lib/quill/quill.js"></script>
+<script>
+    
+    const { createApp, ref, watch, onMounted } = Vue
+    const { createVuetify } = Vuetify
+
+    const pathString = window.location.origin
+
+    const vuetify = createVuetify()
+
+    createApp({
+        setup() {
+            const loading = ref(false)
+            const items = ref([])
+            const itemsProject = ref([])
+            const search = ref(null)
+            const searchProject = ref(null)
+            const select = ref(null)
+            const selectProject = ref(null)
+
+            onMounted(() => {
+                querySelections("", "Customer")
+                querySelections("", "Project")
+                
+                var quill = new Quill('#editorSummary', {
+                    theme: 'snow'
+                })
+
+                quill.on('text-change', function (delta, oldDelta, source) {
+                    const contents = quill.getContents()
+                    if (contents.ops && contents.ops.length > 0) {
+                        const insertOps = contents.ops.filter(op => op.insert && typeof op.insert === 'string')
+                        if (insertOps.length > 0) {
+                            const htmlContent = insertOps.map(op => op.insert).join('')
+                            document.getElementById("Summary").value = htmlContent
+                        }
+                    }
+                })
+            })
+
+            watch(search, val => {
+                if (val !== "" && select.value === null)
+                    val && val !== select.value && querySelections(val, "Customer")
+            })
+
+            watch(select, value => {
+                document.getElementById('CustomerId').value = value
+            });
+
+            watch(searchProject, val => {
+                if (val !== "" && selectProject.value === null)
+                    val && val !== selectProject.value && querySelections(val, "Project")
+            })
+
+            watch(selectProject, value => {
+                document.getElementById('ProjectId').value = value
+            });
+
+            const querySelections = (v, controller) => {
+                loading.value = true
+                const url = `${pathString}/${controller}/Get${controller}?filter=${v}`;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (controller === "Customer") {
+                            items.value = data;
+                        }
+                        else {
+                            itemsProject.value = data;
+                        }
+
+                        loading.value = false;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        loading.value = false;
+                    });
+            }
+            
+            return {
+                loading, items, search, select,
+                itemsProject, searchProject, selectProject,
+                querySelections
+            }
+        }
+    }).use(vuetify).mount('#app')
+</script>
+
+
+

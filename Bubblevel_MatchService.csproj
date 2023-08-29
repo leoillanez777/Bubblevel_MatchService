@@ -16,13 +16,40 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Context\" />
     <None Remove="Migrations\" />
+    <None Remove="Views\Shared\DisplayTemplates\" />
+    <None Remove="Views\Shared\EditorTemplates\" />
+    <None Remove="Services\" />
+    <None Remove="Services\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Views\Shared\DisplayTemplates\" />
+    <Folder Include="Views\Shared\EditorTemplates\" />
+    <Folder Include="wwwroot\lib\vuejs\" />
+    <Folder Include="wwwroot\lib\vuejs\dist\" />
+    <Folder Include="wwwroot\lib\vuetify\" />
+    <Folder Include="wwwroot\lib\vuetify\dist\" />
+    <Folder Include="wwwroot\lib\vuetify\fonts\" />
+    <Folder Include="wwwroot\lib\vuetify\scss\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\Interfaces\" />
+    <Folder Include="wwwroot\lib\quill\" />
+    <Folder Include="wwwroot\lib\jquery-validation\dist\localization\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\lib\vuejs\" />
+    <Content Remove="wwwroot\lib\vuejs\dist\" />
+    <Content Remove="wwwroot\lib\vuetify\" />
+    <Content Remove="wwwroot\lib\vuetify\dist\" />
+    <Content Remove="wwwroot\lib\vuetify\fonts\" />
+    <Content Remove="wwwroot\lib\vuetify\scss\" />
+    <Content Remove="wwwroot\lib\quill\" />
+    <Content Remove="wwwroot\lib\jquery-validation\dist\localization\" />
   </ItemGroup>
 </Project>

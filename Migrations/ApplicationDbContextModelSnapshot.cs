@@ -22,7 +22,7 @@ namespace Bubblevel_MatchService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Bubblevel_MatchService.Models.Customer", b =>
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,8 +30,30 @@ namespace Bubblevel_MatchService.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("SupportIncidentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupportIncidentId");
+
+                    b.ToTable("Comment");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -47,6 +69,170 @@ namespace Bubblevel_MatchService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.EmailSetting", b =>
+                {
+                    b.Property<string>("Host")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Port")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("UseSsl")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("UseTls")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("EmailSetting");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Intervention", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Duration")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("SupportIncidentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupportIncidentId");
+
+                    b.ToTable("Intervention");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.SupportIncident", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Total")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("SupportIncident");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Comment", b =>
+                {
+                    b.HasOne("Bubblevel_MatchService.Models.SupportIncident", "SupportIncident")
+                        .WithMany("Comments")
+                        .HasForeignKey("SupportIncidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SupportIncident");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Intervention", b =>
+                {
+                    b.HasOne("Bubblevel_MatchService.Models.SupportIncident", "SupportIncident")
+                        .WithMany("Interventions")
+                        .HasForeignKey("SupportIncidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SupportIncident");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.SupportIncident", b =>
+                {
+                    b.HasOne("Bubblevel_MatchService.Models.Customer", "Customer")
+                        .WithMany("SupportIncidents")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Bubblevel_MatchService.Models.Project", "Project")
+                        .WithMany("SupportIncidents")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Customer", b =>
+                {
+                    b.Navigation("SupportIncidents");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.Project", b =>
+                {
+                    b.Navigation("SupportIncidents");
+                });
+
+            modelBuilder.Entity("Bubblevel_MatchService.Models.SupportIncident", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Interventions");
                 });
 #pragma warning restore 612, 618
         }
