@@ -82,7 +82,7 @@ public class EmailSettingController : Controller {
           throw;
         }
       }
-      return RedirectToAction(nameof(Index));
+      return RedirectToAction(nameof(Index), "Home");
     }
     return View(emailSetting);
   }

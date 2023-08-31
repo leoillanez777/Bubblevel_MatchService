@@ -7,7 +7,7 @@
 <h1>Support Incident</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+    <a asp-action="Create" class="mt-2 btn btn-outline-primary">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -52,18 +52,38 @@
                 <td>
                     @if (item.Comments != null)
                     {
-                        @foreach (var c in item.Comments)
-                        {
-                            <div class="badge bg-primary text-wrap fw-lighter" style="width: 6rem;">
-                                @c.Text
-                            </div>
-                        }
+                          <div class="overflow-scroll" style="max-height: 3rem;">
+                              @foreach (var c in item.Comments)
+                              {
+                                  <div class="badge bg-primary text-truncate fw-lighter" style="width: 6rem;">
+                                      @c.Text
+                                  </div>
+                              }
+                          </div>
                     }
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Options
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-action="State" asp-route-id="@item.Id"><span class="mdi mdi-check-circle-outline mr-2"></span>Approve</a></li>
+                            <li><a class="dropdown-item" asp-action="Email" asp-route-id="@item.Id"><span class="mdi mdi-email-outline mr-2"></span>Email</a></li>
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Comment"
+                                   asp-action="Index"
+                                   asp-route-supportId="@item.Id"
+                                   asp-route-name="@item.Customer!.Name">
+                                    <span class="mdi mdi-comment-outline mr-2"></span>
+                                    Comment
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item link-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="mdi mdi-trash-can-outline mr-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         }

@@ -1,5 +1,5 @@
 ﻿<script>
-    const { createApp, ref, watch, onMounted } = Vue
+    const { createApp, ref, watch, onMounted, nextTick } = Vue
     const { createVuetify } = Vuetify
 
     const pathString = window.location.origin
@@ -12,8 +12,24 @@
             const items = ref([])
             const search = ref(null)
             const select = ref("")
+            const dialog = ref(false)
+            const dialogPartial = ref(false)
+            const email = ref("")
+            const name = ref("")
+            const text = ref("")
+            const snackbar = ref(false)
+            const colorSnack = ref("blue-grey")
 
-            onMounted(() => {
+            const rules = ref({
+                required: value => !!value || 'Required.',
+                email: value => {
+                    const pattern = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    return pattern.test(value) || 'Invalid e-mail.'
+                },
+            })
+
+            onMounted(async () => {
+                await nextTick()
                 querySelections("")
             })
 
@@ -22,24 +38,74 @@
                     val && val !== select.value && querySelections(val)
             })
 
+            const submit = async (event) => {
+                loading.value = true
+
+                const results = await event
+                console.log(results)
+                if (results.valid) {
+                    const url = `${pathString}/Customer/CreateCustomer`
+                    const data = {
+                        name: name.value,
+                        email: email.value
+                    }
+                    const obj = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    }
+                    fetch(url, obj)
+                        .then(response => response.json())
+                        .then(data => {
+                            loading.value = false
+                            if (data.msg === "OK") {
+                                colorSnack.value = 'blue-grey'
+                                text.value = "Customer created successfully"
+                                openDialog(false)
+                            }
+                            else {
+                                text.value = data.msg
+                                colorSnack.value = 'red-darken-3'
+                            }
+                            snackbar.value = true;
+                        })
+                        .catch(error => {
+                            loading.value = false
+                            console.error('Error:', error);
+                        })
+                }
+                else {
+                    loading.value = false
+                }
+            }
+
+            const openDialog = async (cond) => {
+                dialog.value = cond;
+                dialogPartial.value = cond;
+            }
+
             const querySelections = (v) => {
                 loading.value = true
-                const url = `${pathString}/Customer/GetCustomer?filter=${v}`;
+                const url = `${pathString}/Customer/GetCustomer?filter=${v}`
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        items.value = data;
-                        loading.value = false;
+                        items.value = data
+                        loading.value = false
                     })
                     .catch(error => {
-                        console.error(error);
-                        loading.value = false;
+                        console.error(error)
+                        loading.value = false
                     });
             }
-            
+
             return {
                 loading, items, search, select,
-                querySelections
+                dialog, dialogPartial,
+                rules, email, name, text, snackbar, colorSnack,
+                openDialog, querySelections, submit
             }
         }
     }).use(vuetify).mount('#app')

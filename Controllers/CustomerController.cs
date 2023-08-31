@@ -78,11 +78,42 @@ public class CustomerController : Controller {
   public async Task<IActionResult> Create([Bind("Id,Name,Email,HasActiveSupportPlan")] Customer customer)
   {
     if (ModelState.IsValid) {
+      if (CustomerEmailExists(customer.Email)) {
+        ModelState.AddModelError("Email", "The email already exists in the database.");
+        return View(customer);
+      }
       _context.Add(customer);
       await _context.SaveChangesAsync();
+      
       return RedirectToAction(nameof(Index));
     }
     return View(customer);
+  }
+
+  [HttpPost]
+  public async Task<IActionResult> CreateCustomer([FromBody]CustomerDTO customerDTO)
+  {
+
+    if (customerDTO == null) {
+      return BadRequest("Invalid data");
+    }
+
+    string msg = "OK";
+    if (CustomerEmailExists(customerDTO.Email)) {
+      msg = "The email already exists in the database.";
+    }
+    else {
+      Customer customer = new() {
+        Name = customerDTO.Name,
+        Email = customerDTO.Email,
+        HasActiveSupportPlan = false,
+        SupportIncidents = null!
+      };
+
+      _context.Add(customer);
+      await _context.SaveChangesAsync();
+    }
+    return Json(new { msg });
   }
 
   // GET: Customer/Edit/5
@@ -112,6 +143,12 @@ public class CustomerController : Controller {
 
     if (ModelState.IsValid) {
       try {
+
+        if (CustomerEmailExists(customer.Email)) {
+          ModelState.AddModelError("Email", "The email already exists in the database.");
+          return View(customer);
+        }
+
         _context.Update(customer);
         await _context.SaveChangesAsync();
       }
@@ -164,5 +201,10 @@ public class CustomerController : Controller {
   private bool CustomerExists(int id)
   {
     return (_context.Customer?.Any(e => e.Id == id)).GetValueOrDefault();
+  }
+
+  private bool CustomerEmailExists(string email)
+  {
+    return (_context.Customer?.Any(e => e.Email.ToLower() == email.ToLower())).GetValueOrDefault();
   }
 }

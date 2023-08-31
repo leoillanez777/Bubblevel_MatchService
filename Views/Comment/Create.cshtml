@@ -1,0 +1,33 @@
+@model Bubblevel_MatchService.Models.Comment
+
+@{
+  ViewData["Title"] = "Create";
+}
+
+<h4>Create Comment to @ViewBag.CustomerName (@ViewBag.SupportIncidentId)</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="SupportIncidentId" type="hidden" value="@ViewBag.SupportIncidentId" />
+            <div class="form-group mt-4">
+                <label asp-for="Text" class="control-label"></label>
+                <textarea asp-for="Text" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mt-4">
+                <input type="submit" value="Create" class="btn btn-primary" asp-route-name="@ViewBag.CustomerName" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" asp-route-supportId="@ViewBag.SupportIncidentId" asp-route-name="@ViewBag.CustomerName">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

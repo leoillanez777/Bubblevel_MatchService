@@ -1,0 +1,62 @@
+@page
+@model Bubblevel_MatchService.Views.Customer._CreateModalVueModel
+
+<html>
+    <body class="w-100">
+        <div class="container">
+            <v-row justify="center">
+                <v-form class="w-100" fast-fail v-on:submit.prevent="submit">
+                    <v-card class="w-100">
+                        <v-card-title>
+                            <span class="text-h5">Create Customer</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12" md="6">
+                                        <v-text-field label="Name*" v-model="name"
+                                                      :rules="[rules.required]"
+                                                      density="compact" variant="outlined"
+                                                      required>
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="6">
+                                        <v-text-field label="Email address*" v-model="email"
+                                                      density="compact" variant="outlined"
+                                                      prepend-inner-icon="mdi-email-outline"
+                                                      :rules="[rules.required, rules.email]"
+                                                      hint="example@email.com"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                            <small>*indicates required field</small>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue-darken-1" variant="text" v-on:click="openDialog(false)">
+                                Close
+                            </v-btn>
+                            <v-btn type="submit" color="blue-darken-1"
+                                   :loading="loading"
+                                   variant="tonal" size="large" v-on:click="openDialog(true)">
+                                Save
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-form>
+
+                <v-snackbar v-model="snackbar" :color="colorSnack">
+                    {{ text }}
+
+                    <template v-slot:actions>
+                        <v-btn color="blue"
+                               variant="text"
+                               v-on:click="openModal(false)">
+                            Close
+                        </v-btn>
+                    </template>
+                </v-snackbar>
+            </v-row>
+        </div>
+    </body>
+</html>

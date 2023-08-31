@@ -1,0 +1,13 @@
+﻿@model string
+@switch (Model)
+{
+    case "Pending approval":
+        <span class="badge rounded-pill text-bg-secondary m-2">@Model</span>
+        break;
+    case "Rejected by the customer":
+        <span class="badge rounded-pill text-bg-dark m-2">@Model</span>
+        break;
+    default:
+        <span class="badge rounded-pill text-bg-light">@Model</span>
+          break;
+  }

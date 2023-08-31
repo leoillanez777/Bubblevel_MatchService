@@ -11,6 +11,7 @@ namespace Bubblevel_MatchService.Context
     {
     }
 
+    public DbSet<Comment> Comment { get; set; } = default!;
     public DbSet<Customer> Customer { get; set; } = default!;
     public DbSet<EmailSetting> EmailSetting { get; set; } = default!;
     public DbSet<Project> Project { get; set; } = default!;

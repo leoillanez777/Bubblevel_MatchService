@@ -28,10 +28,11 @@ namespace Bubblevel_MatchService.Models
 
     [ForeignKey("ProjectId")]
     [Display(Name = "Project")]
-    public int ProjectId { get; set; }
+    public int? ProjectId { get; set; }
     public Project? Project { get; set; }
 
-    public string State { get; set; } = null!;
+    [UIHint("State")]
+    public string? State { get; set; }
   }
 }
 

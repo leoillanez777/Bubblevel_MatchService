@@ -1,8 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Net.Mail;
+﻿using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
 using Bubblevel_MatchService.Models;
 using Bubblevel_MatchService.Services.Interfaces;
+using Bubblevel_MatchService.Migrations;
 
 namespace Bubblevel_MatchService.Services
 {
@@ -17,20 +18,25 @@ namespace Bubblevel_MatchService.Services
 
     public async Task SendEmailAsync(string toEmail, string subject, string message)
     {
-      using var client = new SmtpClient(_emailSettings.Host, _emailSettings.Port);
-      client.UseDefaultCredentials = false;
-      client.Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password);
-      client.EnableSsl = _emailSettings.UseSsl;
+      var email = new MimeMessage();
 
-      var mailMessage = new MailMessage {
-        From = new MailAddress(_emailSettings.Username),
-        Subject = subject,
-        Body = message,
-        IsBodyHtml = true
+      email.From.Add(new MailboxAddress("Sender Name", _emailSettings.Username));
+      email.To.Add(new MailboxAddress("Receiver Name", toEmail));
+
+      email.Subject = subject;
+      email.Body = new TextPart(MimeKit.Text.TextFormat.Html) {
+        Text = "<b>Hello all the way from the land of C#</b>"
       };
-      mailMessage.To.Add(toEmail);
 
-      await client.SendMailAsync(mailMessage);
+      using (var smtp = new SmtpClient()) {
+        await smtp.ConnectAsync(_emailSettings.Host, _emailSettings.Port, _emailSettings.UseSsl);
+
+        // Note: only needed if the SMTP server requires authentication
+        await smtp.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+
+        await smtp.SendAsync(email);
+        await smtp.DisconnectAsync(true);
+      }
 
     }
   }

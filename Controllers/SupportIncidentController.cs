@@ -24,27 +24,9 @@ public class SupportIncidentController : Controller {
   {
     int pageSize = 10;
     int pageNumber = page ?? 1;
-    var applicationDbContext = _context.SupportIncident.Include(s => s.Customer).Include(s => s.Project);
+    var applicationDbContext = _context.SupportIncident.Include(s => s.Customer).Include(s => s.Comments);
     
     return View(await applicationDbContext.ToPagedListAsync(pageNumber, pageSize));
-  }
-
-  // GET: SupportIncident/Details/5
-  public async Task<IActionResult> Details(int? id)
-  {
-    if (id == null || _context.SupportIncident == null) {
-      return NotFound();
-    }
-
-    var supportIncident = await _context.SupportIncident
-        .Include(s => s.Customer)
-        .Include(s => s.Project)
-        .FirstOrDefaultAsync(m => m.Id == id);
-    if (supportIncident == null) {
-      return NotFound();
-    }
-
-    return View(supportIncident);
   }
 
   // GET: SupportIncident/Create
@@ -71,7 +53,7 @@ public class SupportIncidentController : Controller {
         await _context.SaveChangesAsync();
         await _email.SendEmailAsync(
           supportIncident.Customer!.Email,
-          "Step 1", supportIncident.Summary);
+          "Pending Support Launch", supportIncident.Summary);
 
         await dbContextTransaction.CommitAsync();
 
@@ -88,52 +70,6 @@ public class SupportIncidentController : Controller {
     return View(supportIncident);
   }
 
-  // GET: SupportIncident/Edit/5
-  public async Task<IActionResult> Edit(int? id)
-  {
-    if (id == null || _context.SupportIncident == null) {
-      return NotFound();
-    }
-
-    var supportIncident = await _context.SupportIncident.FindAsync(id);
-    if (supportIncident == null) {
-      return NotFound();
-    }
-    ViewData["CustomerId"] = new SelectList(_context.Customer, "Id", "Email", supportIncident.CustomerId);
-    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Name", supportIncident.ProjectId);
-    return View(supportIncident);
-  }
-
-  // POST: SupportIncident/Edit/5
-  // To protect from overposting attacks, enable the specific properties you want to bind to.
-  // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-  [HttpPost]
-  [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Edit(int id, [Bind("Id,Summary,IsResolved,TotalDebited,CustomerId,ProjectId")] SupportIncident supportIncident)
-  {
-    if (id != supportIncident.Id) {
-      return NotFound();
-    }
-
-    if (ModelState.IsValid) {
-      try {
-        _context.Update(supportIncident);
-        await _context.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException) {
-        if (!SupportIncidentExists(supportIncident.Id)) {
-          return NotFound();
-        }
-        else {
-          throw;
-        }
-      }
-      return RedirectToAction(nameof(Index));
-    }
-    ViewData["CustomerId"] = new SelectList(_context.Customer, "Id", "Email", supportIncident.CustomerId);
-    ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Name", supportIncident.ProjectId);
-    return View(supportIncident);
-  }
 
   // GET: SupportIncident/Delete/5
   public async Task<IActionResult> Delete(int? id)
