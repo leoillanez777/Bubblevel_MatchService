@@ -1,0 +1,64 @@
+@model Bubblevel_MatchService.Models.Setting
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Setting</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group mt-4">
+                <label asp-for="State" class="control-label"></label>
+                <select asp-for="State" class="form-control" asp-items="ViewBag.State"></select>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="DeliveryService" class="control-label"></label>
+                <select asp-for="DeliveryService" class="form-control" asp-items="ViewBag.Emailing"></select>
+                <span asp-validation-for="DeliveryService" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="EmailSender" class="control-label"></label>
+                <input asp-for="EmailSender" class="form-control" />
+                <span asp-validation-for="EmailSender" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="NameReceiver" class="control-label"></label>
+                <input asp-for="NameReceiver" class="form-control" />
+                <span asp-validation-for="NameReceiver" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="Summary" class="control-label"></label>
+                <input asp-for="Summary" class="form-control" />
+                <span asp-validation-for="Summary" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check mt-4">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ResponseByEmail" /> @Html.DisplayNameFor(model => model.ResponseByEmail)
+                </label>
+            </div>
+            <div class="form-group mt-4">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

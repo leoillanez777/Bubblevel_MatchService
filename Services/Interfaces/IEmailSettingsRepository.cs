@@ -5,7 +5,8 @@ namespace Bubblevel_MatchService.Services.Interfaces
 {
   public interface IEmailSettingsRepository
   {
-    EmailSetting GetEmailSettingsAsync();
+    EmailSetting GetEmailSettings();
+    Setting GetSetting(State state);
   }
 }
 

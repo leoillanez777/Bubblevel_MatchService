@@ -1,9 +1,11 @@
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
+using Bubblevel_MatchService.Extensions;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -18,6 +20,14 @@ public class CommentController : Controller {
   // GET: Comment
   public async Task<IActionResult> Index(int supportId, string name, int? page)
   {
+    //// get source view and save in claims.
+    //var userManager = HttpContext.RequestServices
+    //                            .GetRequiredService<UserManager<Areas.Identity.Data.ApplicationUser>>();
+    //// Obtenemos el usuario actual
+    //var user = await userManager.GetUserAsync(HttpContext.User);
+    //Claim sourceViewClaim = new("SourceView", "John");
+    //await userManager.AddClaimAsync(user, sourceViewClaim);
+
     ViewData["SupportIncidentId"] = supportId;
     ViewData["CustomerName"] = name;
     int pageSize = 10;

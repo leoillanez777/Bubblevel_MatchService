@@ -24,8 +24,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="SupportIncident" asp-action="Index">Support Launch</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Support</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SupportIncident" asp-action="Index">Launch</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SupportIncident" asp-action="ListInProgress">In Progress</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SupportIncident" asp-action="ListAwaiting">Awaiting Financial</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Parameters</a>
@@ -34,7 +40,7 @@
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Project" asp-action="Index">Project</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="EmailSetting" asp-action="Create">Email</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Setting</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Setting" asp-action="Index">Setting</a></li>
                             </ul>
                         </li>
                     </ul>

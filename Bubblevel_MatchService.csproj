@@ -18,6 +18,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
     <PackageReference Include="MailKit" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.10" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Context\" />
@@ -26,6 +28,8 @@
     <None Remove="Views\Shared\EditorTemplates\" />
     <None Remove="Services\" />
     <None Remove="Services\Interfaces\" />
+    <None Remove="Extensions\" />
+    <None Remove="Areas\Identity\Data\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />
@@ -43,6 +47,8 @@
     <Folder Include="wwwroot\lib\quill\" />
     <Folder Include="wwwroot\lib\jquery-validation\dist\localization\" />
     <Folder Include="wwwroot\lib\tailwindcss\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Areas\Identity\Data\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\lib\vuejs\" />

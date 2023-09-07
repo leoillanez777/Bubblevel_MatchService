@@ -1,0 +1,120 @@
+@model X.PagedList.IPagedList<Bubblevel_MatchService.Models.SupportIncident>
+
+@{
+    ViewData["Title"] = "Support Incident in Progress";
+}
+
+<h4>Support Incident In Progress</h4>
+
+<p>
+    <a asp-action="Create" asp-route-sourceView="@ViewContext.RouteData.Values["action"]" class="mt-2 btn btn-outline-primary">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                State
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Summary)
+            </th>
+            <th>
+                Project Name
+            </th>
+            <th colspan="2">
+                Customer
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Comments)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Summary)
+                </td>
+                <td>
+                    @if (item.Project is null)
+                    {
+                        <div class="alert alert-danger">
+                            Please, associate with a project.
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Project.Name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer!.Email)
+                </td>
+                <td>
+                    @if (item.Comments != null)
+                    {
+                        <div class="overflow-scroll" style="max-height: 3rem;">
+                            @foreach (var c in item.Comments)
+                            {
+                                <v-tooltip text="@c.Text" location="bottom">
+                                    <template v-slot:activator="{ props }">
+                                        <div class="badge bg-primary text-truncate fw-lighter" style="width: 6rem;" v-bind="props">
+                                            @c.Text
+                                        </div>
+                                    </template>
+                                </v-tooltip>
+
+                            }
+                        </div>
+                    }
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Options
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-action="Intervention" asp-route-id="@item.Id"><span class="mdi mdi-check-circle-outline mr-2"></span>Interventions</a></li>
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Comment"
+                                   asp-action="Index"
+                                   asp-route-supportId="@item.Id"
+                                   asp-route-name="@item.Customer!.Name">
+                                    <span class="mdi mdi-comment-outline mr-2"></span>
+                                    Comment
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item link-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="mdi mdi-trash-can-outline mr-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="pagination">
+    <partial name="_PaginationPartial" model="@Model" />
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("~/Views/SupportIncident/_IndexVue.cshtml");
+    }
+}

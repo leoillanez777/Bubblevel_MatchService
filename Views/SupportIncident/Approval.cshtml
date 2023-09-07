@@ -1,0 +1,42 @@
+@model Bubblevel_MatchService.Models.SupportIncident
+
+@{
+    ViewData["Title"] = "Approval";
+}
+
+
+<h4>Approval Pendient</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Summary" />
+            <input type="hidden" asp-for="CustomerId" />
+
+            <div class="alert alert-secondary" role="alert">
+                <h4 class="alert-heading">@Model.Customer!.Name</h4>
+                <p>
+                    @Model.Summary
+                </p>
+                <hr>
+                <p class="mb-0">@Model.Customer!.Email</p>
+            </div>
+
+            <div class="d-flex flex-row justify-content-evenly mt-4">
+                <button type="submit" class="btn btn-success" asp-route-state="approval">Approval</button>
+                <button type="submit" class="btn btn-warning" asp-route-state="rejected">Rejected</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -32,7 +32,9 @@ namespace Bubblevel_MatchService.Models
     public Project? Project { get; set; }
 
     [UIHint("State")]
-    public string? State { get; set; }
+    public State State { get; set; } = State.Pending;
+
+    public string? Hash { get; set; }
   }
 }
 

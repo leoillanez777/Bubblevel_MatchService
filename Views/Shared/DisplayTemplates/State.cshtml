@@ -1,13 +1,35 @@
-﻿@model string
+﻿@model State
+@using Bubblevel_MatchService.Extensions
 @switch (Model)
 {
-    case "Pending approval":
-        <span class="badge rounded-pill text-bg-secondary m-2">@Model</span>
+    case State.Pending:
+        <span class="badge rounded-pill text-bg-secondary m-2">
+            @Model.GetDisplayName()
+        </span>
         break;
-    case "Rejected by the customer":
-        <span class="badge rounded-pill text-bg-dark m-2">@Model</span>
+    case State.Rejected:
+        <span class="badge rounded-pill text-bg-dark m-2">
+            @Model.GetDisplayName()
+        </span>
+        break;
+    case State.Awaiting:
+        <span class="badge rounded-pill text-bg-warning m-2">
+            @Model.GetDisplayName()
+        </span>
+        break;
+    case State.InProgress:
+        <span class="badge rounded-pill text-bg-info m-2">
+            @Model.GetDisplayName()
+        </span>
+        break;
+    case State.Solved:
+        <span class="badge rounded-pill text-bg-success m-2">
+            @Model.GetDisplayName()
+        </span>
         break;
     default:
-        <span class="badge rounded-pill text-bg-light">@Model</span>
-          break;
-  }
+        <span class="badge rounded-pill text-bg-light">
+            @Model.GetDisplayName()
+        </span>
+        break;
+}

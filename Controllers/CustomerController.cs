@@ -144,7 +144,7 @@ public class CustomerController : Controller {
     if (ModelState.IsValid) {
       try {
 
-        if (CustomerEmailExists(customer.Email)) {
+        if (CustomerEmailExists(customer.Email, customer.Id)) {
           ModelState.AddModelError("Email", "The email already exists in the database.");
           return View(customer);
         }
@@ -203,8 +203,10 @@ public class CustomerController : Controller {
     return (_context.Customer?.Any(e => e.Id == id)).GetValueOrDefault();
   }
 
-  private bool CustomerEmailExists(string email)
+  private bool CustomerEmailExists(string email, int? customerId = null)
   {
-    return (_context.Customer?.Any(e => e.Email.ToLower() == email.ToLower())).GetValueOrDefault();
+    return _context.Customer
+      .Where(c => c.Email.ToLower() == email.ToLower())
+      .Any(c => customerId == null || c.Id != customerId);
   }
 }

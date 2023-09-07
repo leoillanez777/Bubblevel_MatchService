@@ -11,9 +11,9 @@ namespace Bubblevel_MatchService.Models
     [Required]
     public string Name { get; set; } = null!;
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; }
 
-    public ICollection<SupportIncident> SupportIncidents { get; set; } = null!;
+    public ICollection<SupportIncident>? SupportIncidents { get; set; } = null!;
   }
 }
 

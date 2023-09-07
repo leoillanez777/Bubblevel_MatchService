@@ -14,10 +14,16 @@ namespace Bubblevel_MatchService.Services
       _dbContext = dbContext;
     }
 
-    public EmailSetting GetEmailSettingsAsync()
+    public EmailSetting GetEmailSettings()
     {
       var emailSetting = _dbContext.EmailSetting.FirstOrDefault();
       return emailSetting!;
+    }
+
+    public Setting GetSetting(State state)
+    {
+      var setting = _dbContext.Setting.FirstOrDefault(s => s.State == state);
+      return setting!;
     }
   }
 }

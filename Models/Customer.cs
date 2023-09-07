@@ -12,7 +12,8 @@ public class Customer
   public string Name { get; set; } = null!;
   [Required]
   public string Email { get; set; } = null!;
+  [Display(Name = "Has Active Support Plan")]
   public bool HasActiveSupportPlan { get; set; }
-  public ICollection<SupportIncident> SupportIncidents { get; set; } = null!;
+  public ICollection<SupportIncident>? SupportIncidents { get; set; }
 }
 
