@@ -74,7 +74,7 @@
                             Options
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-action="Approval" asp-route-id="@item.Id"><span class="mdi mdi-check-circle-outline mr-2"></span>Interventions</a></li>
+                            <li><a class="dropdown-item" asp-action="Approval" asp-route-id="@item.Id" asp-route-stateSource="awaiting"><span class="mdi mdi-check-circle-outline mr-2"></span>Approval</a></li>
                             <li>
                                 <a class="dropdown-item"
                                    asp-controller="Comment"

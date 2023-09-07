@@ -73,7 +73,7 @@
                             Options
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-action="Approval" asp-route-id="@item.Id"><span class="mdi mdi-check-circle-outline mr-2"></span>Approve</a></li>
+                            <li><a class="dropdown-item" asp-action="Approval" asp-route-id="@item.Id" asp-route-stateSource="pending"><span class="mdi mdi-check-circle-outline mr-2"></span>Approve</a></li>
                             <li><a class="dropdown-item" asp-action="Email" asp-route-id="@item.Id"><span class="mdi mdi-email-outline mr-2"></span>Email</a></li>
                             <li>
                                 <a class="dropdown-item"

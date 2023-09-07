@@ -17,4 +17,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
   public DbSet<Project> Project { get; set; } = default!;
   public DbSet<Setting> Setting { get; set; } = default!;
   public DbSet<SupportIncident> SupportIncident { get; set; } = default!;
+  public DbSet<Bubblevel_MatchService.Models.Intervention> Intervention { get; set; } = default!;
 }

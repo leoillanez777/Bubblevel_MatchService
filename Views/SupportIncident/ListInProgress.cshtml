@@ -89,7 +89,14 @@
                             Options
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-action="Intervention" asp-route-id="@item.Id"><span class="mdi mdi-check-circle-outline mr-2"></span>Interventions</a></li>
+                            @if (item.Project is null)
+                            {
+                                <li><a class="dropdown-item" asp-action="AssociateProject" asp-route-id="@item.Id" asp-route-sourceView="@ViewContext.RouteData.Values["action"]"><span class="mdi mdi-link mr-2"></span>Associate project</a></li>
+                            }
+                            else
+                            {
+                                <li><a class="dropdown-item" asp-controller="Intervention" asp-action="Index" asp-route-id="@item.Id"><span class="mdi mdi-av-timer mr-2"></span>Interventions</a></li>
+                            }
                             <li>
                                 <a class="dropdown-item"
                                    asp-controller="Comment"

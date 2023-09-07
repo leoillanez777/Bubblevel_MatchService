@@ -24,11 +24,11 @@ namespace Bubblevel_MatchService.Context
 
     private static async Task EnsureTestUserAsync(UserManager<ApplicationUser> userManager)
     {
-      var testUser = await userManager.FindByNameAsync("test@example.com");
+      var testUser = await userManager.FindByNameAsync("leonardoilla777@protonmail.com");
       if (testUser == null) {
         testUser = new ApplicationUser {
-          UserName = "test@example.com",
-          Email = "test@example.com",
+          UserName = "leonardoilla777@protonmail.com",
+          Email = "leonardoilla777@protonmail.com",
         };
         await userManager.CreateAsync(testUser, "Password123!");
       }

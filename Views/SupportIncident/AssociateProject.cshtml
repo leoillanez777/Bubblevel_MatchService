@@ -1,0 +1,66 @@
+@model Bubblevel_MatchService.Models.SupportIncident
+@{
+  ViewData["Title"] = "Create";
+}
+
+<h1>Associate to Project</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        
+        <form asp-action="AssociateProject">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Summary" />
+            <input type="hidden" asp-for="CustomerId" />
+            <input type="hidden" asp-for="State" />
+
+            <div class="form-group mt-4">
+                <label asp-for="Customer" class="control-label"></label>
+                <div class="alert alert-light">
+                    @Html.DisplayFor(model => model.Customer!.Name)
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <label asp-for="Summary" class="control-label"></label>
+                <div class="alert alert-light">
+                    @Html.DisplayFor(model => model.Summary)
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <label asp-for="ProjectId" class="control-label"></label>
+                <input type="hidden" id="ProjectId" name="ProjectId" v-model="select" />
+                <v-autocomplete v-model="select" variant="solo"
+                                v-model:search="search"
+                                item-title="name"
+                                item-value="id"
+                                :loading="loading"
+                                :items="items"
+                                clearable>
+                </v-autocomplete>
+            </div>
+            <div class="form-group mt-4">
+                <v-btn type="submit" variant="outlined" rounded color="blue">
+                    <v-icon start icon="mdi-checkbox-marked-circle"></v-icon>
+                    Associate
+                </v-btn>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="@ViewBag.SourceView">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("~/Views/SupportIncident/_AssociateProjectVue.cshtml");
+    }
+}
+
+

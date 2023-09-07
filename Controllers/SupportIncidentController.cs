@@ -1,10 +1,10 @@
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
 using Bubblevel_MatchService.Services.Interfaces;
+using Bubblevel_MatchService.Extensions;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -159,8 +159,9 @@ public class SupportIncidentController : Controller {
     return View(supportIncident);
   }
 
-  public async Task<IActionResult> Approval(int? id)
+  public async Task<IActionResult> Approval(int? id, string stateSource = "pending")
   {
+    ViewBag.StateSource = stateSource;
     if (id == null || _context.SupportIncident == null) {
       return NotFound();
     }
@@ -177,7 +178,7 @@ public class SupportIncidentController : Controller {
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Approval(int id, [Bind("Id,Summary,CustomerId")] SupportIncident supportIncident, string state)
+  public async Task<IActionResult> Approval(int id, [Bind("Id,Summary,CustomerId")] SupportIncident supportIncident, string state, string stateSource)
   {
     if (id != supportIncident.Id) {
       return NotFound();
@@ -190,9 +191,13 @@ public class SupportIncidentController : Controller {
     }
 
     bool hasActiveSupportPlan = supportIncident.Customer.HasActiveSupportPlan;
+    bool isFinanciaApproval = stateSource == "awaiting";
+
     supportIncident.State = state switch
     {
-      "approval" => hasActiveSupportPlan ? State.InProgress : State.Awaiting,
+      "approval" when isFinanciaApproval => State.InProgress,
+      "approval" when hasActiveSupportPlan => State.InProgress,
+      "approval" => State.Awaiting,
       "rejected" => State.Rejected,
       _ => State.Pending,
     };
@@ -204,9 +209,11 @@ public class SupportIncidentController : Controller {
         await _context.SaveChangesAsync();
 
         // TODO: generate hash and save to db.
-        var nameState = Extensions.EnumExtensions.GetDisplayName(supportIncident.State);
+        // UNDONE: Change is Financial Approval
+        var nameState = isFinanciaApproval ? State.OnHold.GetDisplayName() : supportIncident.State.GetDisplayName();
         // Send finance email only if you do not have active support
-        if (supportIncident.State == State.Awaiting) {
+        // UNDONE: Change is Financial Approval
+        if (supportIncident.State == State.Awaiting || isFinanciaApproval) {
           await _email.SendEmailAsync(
           supportIncident.Customer!.Email,
           nameState,
@@ -229,6 +236,59 @@ public class SupportIncidentController : Controller {
       }
       return RedirectToAction(nameof(Index));
     }
+    return View(supportIncident);
+  }
+
+  // GET: SupportIncident/AssociateProject
+  public async Task<IActionResult> AssociateProject(int? id, string sourceView)
+  {
+    ViewBag.SourceView = sourceView;
+
+    if (id == null || _context.Project == null) {
+      return NotFound();
+    }
+
+    var supportIncident = await _context.SupportIncident
+      .Include(c => c.Customer)
+      .Include(p => p.Project)
+      .FirstOrDefaultAsync(s => s.Id == id);
+        
+    if (supportIncident == null) {
+      return NotFound();
+    }
+
+    return View(supportIncident);
+  }
+
+  // POST: SupportIncident/AssociateProject
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> AssociateProject([Bind("Id,Summary,CustomerId,State,ProjectId")] SupportIncident supportIncident)
+  {
+    if (supportIncident.CustomerId != 0) {
+      supportIncident.Customer = await _context.Customer.FindAsync(supportIncident.CustomerId);
+    }
+    if (supportIncident.ProjectId != 0) {
+      supportIncident.Project = await _context.Project.FindAsync(supportIncident.ProjectId);
+    }
+    if (ModelState.IsValid) {
+      using var dbContextTransaction = _context.Database.BeginTransaction();
+      try {
+        _context.Update(supportIncident);
+        await _context.SaveChangesAsync();
+
+        await dbContextTransaction.CommitAsync();
+
+        return RedirectToAction(nameof(ListInProgress));
+      }
+      catch (Exception ex) {
+        await dbContextTransaction.RollbackAsync();
+        // TODO: Missing an exception middleware.
+        throw new Exception(ex.Message, ex);
+      }
+
+    }
+
     return View(supportIncident);
   }
 

@@ -12,12 +12,13 @@ namespace Bubblevel_MatchService.Models
     public string Description { get; set; } = null!;
 
     [Column(TypeName = "decimal(18, 2)")]
+    [UIHint("Time")]
     public decimal Duration { get; set; }
 
     [ForeignKey("SupportIncidentId")]
     [Display(Name = "Support Incident")]
     public int SupportIncidentId { get; set; }
-    public SupportIncident SupportIncident { get; set; } = new();
+    public SupportIncident? SupportIncident { get; set; }
   }
 }
 

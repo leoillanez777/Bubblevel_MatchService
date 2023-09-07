@@ -1,0 +1,10 @@
+﻿@model decimal
+
+@{
+    int hours = (int)Math.Floor(Model);
+    int minutes = (int)((Model - hours) * 60);
+}
+
+<span class="badge rounded-pill text-bg-light m-2">
+    @(hours == 0 ? "" : hours + " hr") @(minutes == 0 ? "" : minutes + " min")
+</span>

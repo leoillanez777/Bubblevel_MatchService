@@ -1,0 +1,58 @@
+@model IEnumerable<Bubblevel_MatchService.Models.Intervention>
+
+@{
+    ViewData["Title"] = "Interventions";
+}
+
+<h3>Interventions of @ViewBag.CustomerName</h3>
+
+<div class="alert alert-light">
+    @ViewBag.Summary
+</div>
+
+<p>
+    <a asp-action="Create"
+       asp-route-supportId="@ViewBag.SupportId"
+       asp-route-customerName="@ViewBag.CustomerName"
+       class="btn btn-outline-primary mt-2">Create New Intervention</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                <a  asp-action="Edit"
+                    asp-route-supportId="@ViewBag.SupportId"
+                    asp-route-customerName="@ViewBag.CustomerName"
+                    asp-route-id="@item.Id">Edit</a> |
+                <a  asp-action="Delete"
+                    asp-route-supportId="@ViewBag.SupportId"
+                    asp-route-customerName="@ViewBag.CustomerName"
+                   asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+<div class="mt-4">
+    <a asp-action="ListInProgress" asp-controller="SupportIncident">Back to List</a>
+</div>
