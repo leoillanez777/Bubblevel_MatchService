@@ -27,6 +27,9 @@ namespace Bubblevel_MatchService.Context
       var testUser = await userManager.FindByNameAsync("leonardoilla777@protonmail.com");
       if (testUser == null) {
         testUser = new ApplicationUser {
+          SourceView = "index",
+          FirstName = "Leonardo",
+          LastName = "Illanez",
           UserName = "leonardoilla777@protonmail.com",
           Email = "leonardoilla777@protonmail.com",
         };

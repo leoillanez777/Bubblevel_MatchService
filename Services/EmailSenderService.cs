@@ -3,7 +3,6 @@ using MailKit;
 using MimeKit;
 using Bubblevel_MatchService.Models;
 using Bubblevel_MatchService.Services.Interfaces;
-using Bubblevel_MatchService.Migrations;
 using System.Security.Policy;
 
 namespace Bubblevel_MatchService.Services

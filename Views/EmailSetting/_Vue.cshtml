@@ -6,8 +6,10 @@
 
     createApp({
         setup() {
-            const userName = ref('@Model.Username')
-            const password = ref('@Model.Password')
+            const name = "@(Model is null ? String.Empty : Model.Username)"
+            const pass = "@(Model is null ? String.Empty : Model.Password)"
+            const userName = ref(name)
+            const password = ref(pass)
             const visible = ref(false)
 
             return {

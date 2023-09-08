@@ -39,7 +39,7 @@ public class EmailSettingController : Controller {
     if (ModelState.IsValid) {
       _context.Add(emailSetting);
       await _context.SaveChangesAsync();
-      return RedirectToAction(nameof(Index));
+      return RedirectToAction(nameof(Index), "Home");
     }
     return View(emailSetting);
   }
