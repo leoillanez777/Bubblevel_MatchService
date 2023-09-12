@@ -38,9 +38,15 @@
                     });
             }
 
+            const onSubmit = (e) => {
+                e.preventDefault();
+                loading.value = true;
+                e.target.submit();
+            }
+
             return {
                 loading, items, search, select,
-                querySelections
+                querySelections, onSubmit
             }
         }
     }).use(vuetify).mount('#app')

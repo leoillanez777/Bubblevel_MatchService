@@ -1,8 +1,23 @@
 ﻿<script>
-    const { createApp } = Vue
+    const { createApp, ref } = Vue
     const { createVuetify } = Vuetify
     const vuetify = createVuetify()
 
-    createApp().use(vuetify).mount('#app')
+    createApp({
+        setup() {
+            const loading = ref(false);
+
+            const onSubmit = (e) => {
+                e.preventDefault();
+                loading.value = true;
+                e.target.submit();
+            }
+
+            return {
+                loading,
+                onSubmit
+            }
+        }
+    }).use(vuetify).mount('#app')
 </script>
 

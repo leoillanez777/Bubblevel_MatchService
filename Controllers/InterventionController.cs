@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Bubblevel_MatchService.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
-
 namespace Bubblevel_MatchService.Controllers;
 
 public class InterventionController : Controller {
   private readonly ApplicationDbContext _context;
+  private readonly IEmailSender _email;
   private readonly IWebHostEnvironment _env;
 
-  public InterventionController(ApplicationDbContext context, IWebHostEnvironment env)
+  public InterventionController(ApplicationDbContext context, IEmailSender email, IWebHostEnvironment env)
   {
     _context = context;
+    _email = email;
     _env = env;
   }
 
@@ -125,6 +126,77 @@ public class InterventionController : Controller {
       return RedirectToAction(nameof(Index), new { id = intervention.SupportIncidentId });
     }
     
+    return View(intervention);
+  }
+
+  // GET: Intervention/EditEmail5
+  public async Task<IActionResult> Email(int? id, int supportId, string customerName)
+  {
+    ViewBag.SupportId = supportId;
+    ViewBag.CustomerName = customerName;
+    CreateViewBagForDevOrProd();
+
+    if (id == null || _context.Intervention == null) {
+      return NotFound();
+    }
+
+    var intervention = await _context.Intervention.FindAsync(id);
+    if (intervention == null) {
+      return NotFound();
+    }
+
+    return View(intervention);
+  }
+
+  // POST: Intervention/Email/5
+  // To protect from overposting attacks, enable the specific properties you want to bind to.
+  // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> Email(int id, [Bind("Id,Description,InterventionDate,Duration,SupportIncidentId")] Intervention intervention, string customerName)
+  {
+    ViewBag.SupportId = intervention.SupportIncidentId;
+    ViewBag.CustomerName = customerName;
+    CreateViewBagForDevOrProd();
+
+    if (id != intervention.Id) {
+      return NotFound();
+    }
+
+    if (intervention.SupportIncidentId != 0) {
+      intervention.SupportIncident = await _context.SupportIncident
+        .Include(s => s.Customer)
+        .FirstOrDefaultAsync(s => s.Id == intervention.SupportIncidentId);
+    }
+    Customer? customer = null;
+    if (intervention.SupportIncident != null && intervention.SupportIncident.Customer != null) {
+      customer = intervention.SupportIncident.Customer;
+    }
+
+    if (ModelState.IsValid && customer is not null) {
+      try {
+
+        TimeSpan time = TimeSpan.FromHours((double)intervention.Duration);
+        string format = $"{time.Hours}hr {time.Minutes}min";
+
+        await _email.SendEmailAsync(
+            customer.Email,
+            $"Intervention Nº {intervention.Id}",
+            $"{intervention.Description} <hr /> <b>Date:</b> {intervention.InterventionDate} <hr /> <b>Duration:</b> {format}",
+            customer.Name);
+
+      }
+      catch (DbUpdateConcurrencyException) {
+        if (!InterventionExists(intervention.Id)) {
+          return NotFound();
+        }
+        else {
+          throw;
+        }
+      }
+      return RedirectToAction(nameof(Index), new { id = intervention.SupportIncidentId });
+    }
+
     return View(intervention);
   }
 
