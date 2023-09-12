@@ -52,6 +52,7 @@
     <Folder Include="wwwroot\lib\tailwindcss\" />
     <Folder Include="Extensions\" />
     <Folder Include="Areas\Identity\Data\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\lib\vuejs\" />
@@ -63,5 +64,6 @@
     <Content Remove="wwwroot\lib\quill\" />
     <Content Remove="wwwroot\lib\jquery-validation\dist\localization\" />
     <Content Remove="wwwroot\lib\tailwindcss\" />
+    <Content Remove="wwwroot\images\" />
   </ItemGroup>
 </Project>

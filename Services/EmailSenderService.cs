@@ -70,7 +70,7 @@ namespace Bubblevel_MatchService.Services
       using var mimeMessage = new MimeMessage();
       mimeMessage.From.Add(new MailboxAddress("Bubblevel", _emailSetting.Username));
       mimeMessage.To.Add(new MailboxAddress(name, email));
-
+      mimeMessage.Subject = subject;
       mimeMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) {
         Text = message
       };

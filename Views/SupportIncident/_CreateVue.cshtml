@@ -2,7 +2,7 @@
     const { createApp, ref, watch, onMounted, nextTick } = Vue
     const { createVuetify } = Vuetify
 
-    const pathString = window.location.origin + "/bubblevel"
+    const pathString = window.location.origin + "@ViewBag.UrlClient"
 
     const vuetify = createVuetify()
 
@@ -64,6 +64,8 @@
                                 colorSnack.value = 'blue-grey'
                                 text.value = "Customer created successfully"
                                 openDialog(false)
+                                items.value.push(data.dataObject)
+                                select.value = data.dataObject.id;
                             }
                             else {
                                 text.value = data.msg

@@ -2,7 +2,7 @@
 using Bubblevel_MatchService.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 
-namespace Bubblevel_MatchService.Extensions;
+namespace Bubblevel_MatchService;
 
 public static class IdentityExtensions {
   public static async Task<string?> GetClaim(this ApplicationUser user, UserManager<ApplicationUser> userManager, string nameClaim)

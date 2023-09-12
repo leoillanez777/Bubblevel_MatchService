@@ -72,7 +72,7 @@ public class ProjectController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Create([Bind("Id,Name,Exists")] Project project)
+  public async Task<IActionResult> Create([Bind("Id,Name,IntialDate,Closed")] Project project)
   {
     if (ModelState.IsValid) {
       _context.Add(project);
@@ -101,7 +101,7 @@ public class ProjectController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Exists")] Project project)
+  public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IntialDate,Closed")] Project project)
   {
     if (id != project.Id) {
       return NotFound();

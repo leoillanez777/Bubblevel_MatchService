@@ -11,6 +11,10 @@ namespace Bubblevel_MatchService.Models
     [Required]
     public string Description { get; set; } = null!;
 
+    [DataType(DataType.DateTime)]
+    [Display(Name = "Internetion Date")]
+    public DateTime? InterventionDate { get; set; }
+
     [Column(TypeName = "decimal(18, 2)")]
     [UIHint("Time")]
     public decimal Duration { get; set; }

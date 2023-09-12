@@ -11,6 +11,7 @@
         
         <form asp-action="Email">
             <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group mt-4">
                 <label asp-for="Summary" class="control-label"></label>
                 <textarea asp-for="Summary" class="form-control" rows="3"></textarea>

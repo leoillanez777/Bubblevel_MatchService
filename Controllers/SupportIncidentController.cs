@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
 using Bubblevel_MatchService.Services.Interfaces;
-using Bubblevel_MatchService.Extensions;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -12,11 +11,13 @@ public class SupportIncidentController : Controller {
 
   private readonly ApplicationDbContext _context;
   private readonly IEmailSender _email;
+  private readonly IWebHostEnvironment _env;
 
-  public SupportIncidentController(ApplicationDbContext context, IEmailSender email)
+  public SupportIncidentController(ApplicationDbContext context, IEmailSender email, IWebHostEnvironment env)
   {
     _context = context;
     _email = email;
+    _env = env;
   }
 
   // GET: SupportIncident
@@ -64,6 +65,8 @@ public class SupportIncidentController : Controller {
   public IActionResult Create(string sourceView)
   {
     ViewBag.SourceView = sourceView;
+    CreateViewBagForDevOrProd();
+
     return View();
   }
 
@@ -81,19 +84,29 @@ public class SupportIncidentController : Controller {
     if (ModelState.IsValid) {
       using var dbContextTransaction = _context.Database.BeginTransaction();
       try {
-        supportIncident.State = State.Pending;
+        string returnUrl = nameof(Index);
+        if (supportIncident.Customer!.HasActiveSupportPlan) {
+          supportIncident.State = State.InProgress;
+          returnUrl = nameof(ListInProgress);
+        }
+        else {
+          supportIncident.State = State.Pending;
+
+          // TODO: generate hash and save to db.
+          await _email.SendEmailAsync(
+            supportIncident.Customer!.Email,
+            "Pending Support Launch",
+            supportIncident.Summary,
+            supportIncident.State,
+            supportIncident.Customer.Name);
+        }
+
         _context.Add(supportIncident);
         await _context.SaveChangesAsync();
-        // TODO: generate hash and save to db.
-        await _email.SendEmailAsync(
-          supportIncident.Customer!.Email,
-          "Pending Support Launch",
-          supportIncident.Summary,
-          supportIncident.State,
-          supportIncident.Customer.Name);
+
         await dbContextTransaction.CommitAsync();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(returnUrl);
       }
       catch (Exception ex) {
         await dbContextTransaction.RollbackAsync();
@@ -102,6 +115,8 @@ public class SupportIncidentController : Controller {
       }
       
     }
+
+    CreateViewBagForDevOrProd();
 
     return View(supportIncident);
   }
@@ -126,8 +141,12 @@ public class SupportIncidentController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Email([Bind("Id,Summary,CustomerId,State")] SupportIncident supportIncident)
+  public async Task<IActionResult> Email(int id, [Bind("Id,Summary,CustomerId,State")] SupportIncident supportIncident)
   {
+    if (id != supportIncident.Id) {
+      return NotFound();
+    }
+
     var url = $"{Request.Scheme}://{Request.Host}";
     if (supportIncident.CustomerId != 0) {
       supportIncident.Customer = await _context.Customer.FindAsync(supportIncident.CustomerId);
@@ -243,6 +262,7 @@ public class SupportIncidentController : Controller {
   public async Task<IActionResult> AssociateProject(int? id, string sourceView)
   {
     ViewBag.SourceView = sourceView;
+    CreateViewBagForDevOrProd();
 
     if (id == null || _context.Project == null) {
       return NotFound();
@@ -289,6 +309,8 @@ public class SupportIncidentController : Controller {
 
     }
 
+    CreateViewBagForDevOrProd();
+
     return View(supportIncident);
   }
 
@@ -330,5 +352,15 @@ public class SupportIncidentController : Controller {
   private bool SupportIncidentExists(int id)
   {
     return (_context.SupportIncident?.Any(e => e.Id == id)).GetValueOrDefault();
+  }
+
+  private void CreateViewBagForDevOrProd()
+  {
+    if (_env.IsDevelopment()) {
+      ViewBag.UrlClient = "";
+    }
+    else {
+      ViewBag.UrlClient = "/bubblevel";
+    }
   }
 }

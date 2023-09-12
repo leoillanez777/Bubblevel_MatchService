@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace Bubblevel_MatchService.Extensions; 
+namespace Bubblevel_MatchService; 
 public static class EnumExtensions {
   public static string GetDisplayName(this Enum enumValue)
   {

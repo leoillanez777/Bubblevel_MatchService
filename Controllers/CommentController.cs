@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
-using Bubblevel_MatchService.Extensions;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 

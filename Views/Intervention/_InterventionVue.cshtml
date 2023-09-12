@@ -2,7 +2,7 @@
     const { createApp, ref, watch, onMounted, nextTick } = Vue
     const { createVuetify } = Vuetify
 
-    const pathString = window.location.origin + "/bubblevel"
+    const pathString = window.location.origin + "@ViewBag.UrlClient"
 
     const vuetify = createVuetify()
 
@@ -12,7 +12,8 @@
             for (let hours = 0; hours <= 23; hours++) {
                 for (let minutes = 0; minutes <= 45; minutes += 15) {
                     const state = `${hours > 0 ? hours + ' hr' : ''} ${minutes} min`.trim();
-                    const abbr = (hours + minutes / 60).toFixed(2);
+                    const num = hours + minutes / 60;
+                    const abbr = Number.parseFloat(num).toFixed(2);
 
                     itms.push({ state, abbr });
                 }

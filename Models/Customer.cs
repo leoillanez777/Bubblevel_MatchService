@@ -7,6 +7,7 @@ namespace Bubblevel_MatchService.Models;
 public class Customer
 {
   [Key]
+  [Display(Name = "ERP")]
   public int Id { get; set; }
   [Required]
   public string Name { get; set; } = null!;

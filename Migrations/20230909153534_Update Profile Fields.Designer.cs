@@ -4,6 +4,7 @@ using Bubblevel_MatchService.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bubblevel_MatchService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230909153534_Update Profile Fields")]
+    partial class UpdateProfileFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +205,6 @@ namespace Bubblevel_MatchService.Migrations
                     b.Property<decimal>("Duration")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<DateTime?>("InterventionDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("SupportIncidentId")
                         .HasColumnType("int");
 
@@ -222,15 +222,6 @@ namespace Bubblevel_MatchService.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Closed")
-                        .HasColumnType("bit");
-
-                    b.Property<TimeSpan?>("Hours")
-                        .HasColumnType("time");
-
-                    b.Property<DateTime?>("IntialDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()

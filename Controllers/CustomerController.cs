@@ -98,7 +98,7 @@ public class CustomerController : Controller {
       return BadRequest("Invalid data");
     }
 
-    string msg = "OK";
+    string msg = "OK", idCustomer = "";
     if (CustomerEmailExists(customerDTO.Email)) {
       msg = "The email already exists in the database.";
     }
@@ -112,8 +112,11 @@ public class CustomerController : Controller {
 
       _context.Add(customer);
       await _context.SaveChangesAsync();
+
+      idCustomer = customer.Id.ToString();
     }
-    return Json(new { msg });
+    var dataObject = new { Id = idCustomer, NameWithEmail = $"{customerDTO.Name} ({customerDTO.Email})" };
+    return Json(new { msg, dataObject });
   }
 
   // GET: Customer/Edit/5

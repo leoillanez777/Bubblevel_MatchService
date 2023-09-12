@@ -12,10 +12,12 @@ namespace Bubblevel_MatchService.Controllers;
 
 public class InterventionController : Controller {
   private readonly ApplicationDbContext _context;
+  private readonly IWebHostEnvironment _env;
 
-  public InterventionController(ApplicationDbContext context)
+  public InterventionController(ApplicationDbContext context, IWebHostEnvironment env)
   {
     _context = context;
+    _env = env;
   }
 
   // GET: Intervention
@@ -40,6 +42,7 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = supportId;
     ViewBag.CustomerName = customerName;
+    CreateViewBagForDevOrProd();
 
     return View();
   }
@@ -49,7 +52,7 @@ public class InterventionController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Create([Bind("Id,Description,Duration,SupportIncidentId")] Intervention intervention, string customerName)
+  public async Task<IActionResult> Create([Bind("Id,Description,InterventionDate,Duration,SupportIncidentId")] Intervention intervention, string customerName)
   {
     if (intervention.SupportIncidentId != 0) {
       intervention.SupportIncident = await _context.SupportIncident.FirstOrDefaultAsync(s => s.Id == intervention.SupportIncidentId);
@@ -63,6 +66,7 @@ public class InterventionController : Controller {
 
     ViewBag.SupportId = intervention.SupportIncidentId;
     ViewBag.CustomerName = customerName;
+    CreateViewBagForDevOrProd();
 
     return View(intervention);
   }
@@ -72,6 +76,7 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = supportId;
     ViewBag.CustomerName = customerName;
+    CreateViewBagForDevOrProd();
 
     if (id == null || _context.Intervention == null) {
       return NotFound();
@@ -90,10 +95,11 @@ public class InterventionController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Duration,SupportIncidentId")] Intervention intervention, string customerName)
+  public async Task<IActionResult> Edit(int id, [Bind("Id,Description,InterventionDate,Duration,SupportIncidentId")] Intervention intervention, string customerName)
   {
     ViewBag.SupportId = intervention.SupportIncidentId;
     ViewBag.CustomerName = customerName;
+    CreateViewBagForDevOrProd();
 
     if (id != intervention.Id) {
       return NotFound();
@@ -159,5 +165,14 @@ public class InterventionController : Controller {
   private bool InterventionExists(int id)
   {
     return (_context.Intervention?.Any(e => e.Id == id)).GetValueOrDefault();
+  }
+
+  private void CreateViewBagForDevOrProd() {
+    if (_env.IsDevelopment()) {
+      ViewBag.UrlClient = "";
+    }
+    else {
+      ViewBag.UrlClient = "/bubblevel";
+    }
   }
 }

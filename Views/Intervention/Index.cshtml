@@ -23,6 +23,9 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.InterventionDate)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Duration)
             </th>
             <th></th>
@@ -35,17 +38,41 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.InterventionDate)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Duration)
             </td>
             <td>
-                <a  asp-action="Edit"
-                    asp-route-supportId="@ViewBag.SupportId"
-                    asp-route-customerName="@ViewBag.CustomerName"
-                    asp-route-id="@item.Id">Edit</a> |
-                <a  asp-action="Delete"
-                    asp-route-supportId="@ViewBag.SupportId"
-                    asp-route-customerName="@ViewBag.CustomerName"
-                   asp-route-id="@item.Id">Delete</a>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Options
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-action="Edit"
+                               asp-route-supportId="@ViewBag.SupportId"
+                               asp-route-customerName="@ViewBag.CustomerName"
+                               asp-route-id="@item.Id"><span class="mdi mdi-circle-edit-outline mr-2"></span> Edit</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-action="Email"
+                               asp-route-supportId="@ViewBag.SupportId"
+                               asp-route-customerName="@ViewBag.CustomerName"
+                               asp-route-id="@item.Id">
+                                <span class="mdi mdi-email-outline mr-2"></span>
+                                Email
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a asp-action="Delete" class="dropdown-item"
+                               asp-route-supportId="@ViewBag.SupportId"
+                               asp-route-customerName="@ViewBag.CustomerName"
+                               asp-route-id="@item.Id"><i class="mdi mdi-trash-can-outline mr-2"></i>Delete</a>
+                        </li>
+                    </ul>
+                </div>                
             </td>
         </tr>
 }
