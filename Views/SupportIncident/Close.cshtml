@@ -1,0 +1,110 @@
+@model Bubblevel_MatchService.Models.SupportIncident
+@{
+  ViewData["Title"] = "Close Support";
+}
+
+<h1>Close Support</h1>
+
+<h4>Support Incident</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        
+        <form asp-action="Close">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group mt-4">
+                <label asp-for="Customer" class="control-label"></label>
+                <input type="hidden" asp-for="CustomerId" />
+                <div class="alert alert-light" role="alert">
+                    <h5 class="alert-heading"><b>ERP: </b>@Html.DisplayFor(model => model.Customer!.Id)</h5>
+                    <p>@Html.DisplayFor(model => model.Customer!.Name)</p>
+                </div>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="Summary" class="control-label"></label>
+                <input type="hidden" asp-for="Summary" />
+                <div class="alert alert-light">
+                    @Html.DisplayFor(modelItem => modelItem.Summary)
+                </div>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="Total" class="control-label"></label>
+                <input type="hidden" id="Total" name="Total" v-model="select" />
+                <v-text-field v-model="select" prefix="$" variant="solo"
+                              hint="Use dot for decimals"
+                              :rules="[rules.required, rules.validateDecimal]">
+
+                </v-text-field>
+                <span asp-validation-for="Total" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <label asp-for="Project" class="control-label"></label>
+                <input type="hidden" asp-for="ProjectId" />
+                <div class="alert alert-light" role="alert">
+                    <h5 class="alert-heading">@Html.DisplayFor(model => model.Project!.IntialDate)</h5>
+                    <p>@Html.DisplayFor(model => model.Project!.Name)</p>
+                    <hr>
+                    <p class="mb-0"><b>Duration:</b> @Html.DisplayFor(model => model.Project!.Duration)</p>
+                </div>
+            </div>
+            <div class="form-group mt-4">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Interventions
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                            <div class="accordion-body d-flex">
+                                <v-timeline truncate-line="both">
+                                    @if (Model.Interventions is not null)
+                                        @foreach (var item in Model.Interventions)
+                                        {
+                                            <v-timeline-item dot-color="cyan-lighten-1" fill-dot size="x-small">
+                                                <v-card>
+                                                    <v-card-title class="cyan-lighten-1">
+                                                        <h4 class="font-weight-light">
+                                                            @Html.DisplayFor(modelItem => item.InterventionDate)
+                                                        </h4>
+                                                    </v-card-title>
+                                                    <v-card-text>
+                                                        @Html.DisplayFor(modelItem => item.Description)
+                                                    </v-card-text>
+                                                </v-card>
+                                                <template v-slot:opposite>
+                                                    @Html.DisplayFor(modelItem => item.Duration)
+                                                </template>
+                                            </v-timeline-item>
+                                        }
+                                </v-timeline>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <span asp-validation-for="Total" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <v-btn type="submit" variant="outlined" rounded color="blue" :loading="loading">
+                    <v-icon start icon="mdi-checkbox-marked-circle"></v-icon>
+                    Close
+                </v-btn>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="SolvedList">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("~/Views/SupportIncident/_CloseVue.cshtml");
+    }
+}
+
+

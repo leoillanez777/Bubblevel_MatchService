@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bubblevel_MatchService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230911171954_Update Projec Model")]
-    partial class UpdateProjecModel
+    [Migration("20230913155352_Update Project Model v1")]
+    partial class UpdateProjectModelv1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -229,17 +229,14 @@ namespace Bubblevel_MatchService.Migrations
                     b.Property<bool>("Closed")
                         .HasColumnType("bit");
 
-                    b.Property<TimeSpan?>("Hours")
-                        .HasColumnType("time");
+                    b.Property<decimal>("Duration")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("IntialDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

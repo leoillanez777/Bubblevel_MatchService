@@ -1,5 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bubblevel_MatchService.Models
 {
@@ -15,10 +18,9 @@ namespace Bubblevel_MatchService.Models
     [Display(Name = "Initial Date")]
     public DateTime? IntialDate { get; set; }
 
-    public string? Status { get; set; }
-
-    [DataType(DataType.Duration)]
-    public TimeSpan? Hours { get; set; }
+    [Column(TypeName = "decimal(18, 2)")]
+    [UIHint("Time")]
+    public decimal Duration { get; set; } = 0;
 
     public bool Closed { get; set; } = false;
 

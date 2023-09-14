@@ -5,6 +5,11 @@ using Bubblevel_MatchService.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.Globalization;
+
+CultureInfo culture = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +55,7 @@ builder.Services.ConfigureApplicationCookie(options => {
 // Add services to the container.
 builder.Services.AddTransient<IEmailSettingsRepository, EmailSettingsRepositoryService>();
 builder.Services.AddTransient<IEmailSender, EmailSenderService>();
+builder.Services.AddTransient<IStateOfSupport, StateOfSupportService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 

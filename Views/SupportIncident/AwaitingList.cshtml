@@ -1,14 +1,16 @@
 @model X.PagedList.IPagedList<Bubblevel_MatchService.Models.SupportIncident>
 
 @{
-    ViewData["Title"] = "Support Incident Pending";
+  ViewData["Title"] = "Support Incident in Progress";
+  ViewData["ActionPag"] = "AwaitingList";
 }
 
-<h1>Support Incident Pending</h1>
+<h4>Support Incident Awaiting</h4>
 
 <p>
     <a asp-action="Create" asp-route-sourceView="@ViewContext.RouteData.Values["action"]" class="mt-2 btn btn-outline-primary">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -21,7 +23,7 @@
             <th>
                 @Html.DisplayNameFor(model => model[0].Summary)
             </th>
-            <th colspan="2" class="text-center">
+            <th colspan="2">
                 Customer
             </th>
             <th>
@@ -73,8 +75,7 @@
                             Options
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-action="Approval" asp-route-id="@item.Id" asp-route-stateSource="pending"><span class="mdi mdi-check-circle-outline mr-2"></span>Approve</a></li>
-                            <li><a class="dropdown-item" asp-action="Email" asp-route-id="@item.Id"><span class="mdi mdi-email-outline mr-2"></span>Email</a></li>
+                            <li><a class="dropdown-item" asp-action="Approval" asp-route-id="@item.Id" asp-route-stateSource="awaiting"><span class="mdi mdi-check-circle-outline mr-2"></span>Approval</a></li>
                             <li>
                                 <a class="dropdown-item"
                                    asp-controller="Comment"
@@ -95,7 +96,7 @@
     </tbody>
 </table>
 <div class="pagination">
-    <partial name="_PaginationPartial" model="@Model" />
+    <partial name="_PaginationPartial" model="@Model" view-data="ViewData" />
 </div>
 
 @section Scripts {

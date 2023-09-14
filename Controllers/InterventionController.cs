@@ -12,13 +12,11 @@ namespace Bubblevel_MatchService.Controllers;
 public class InterventionController : Controller {
   private readonly ApplicationDbContext _context;
   private readonly IEmailSender _email;
-  private readonly IWebHostEnvironment _env;
 
-  public InterventionController(ApplicationDbContext context, IEmailSender email, IWebHostEnvironment env)
+  public InterventionController(ApplicationDbContext context, IEmailSender email)
   {
     _context = context;
     _email = email;
-    _env = env;
   }
 
   // GET: Intervention
@@ -43,7 +41,6 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = supportId;
     ViewBag.CustomerName = customerName;
-    CreateViewBagForDevOrProd();
 
     return View();
   }
@@ -67,7 +64,6 @@ public class InterventionController : Controller {
 
     ViewBag.SupportId = intervention.SupportIncidentId;
     ViewBag.CustomerName = customerName;
-    CreateViewBagForDevOrProd();
 
     return View(intervention);
   }
@@ -77,7 +73,6 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = supportId;
     ViewBag.CustomerName = customerName;
-    CreateViewBagForDevOrProd();
 
     if (id == null || _context.Intervention == null) {
       return NotFound();
@@ -100,7 +95,6 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = intervention.SupportIncidentId;
     ViewBag.CustomerName = customerName;
-    CreateViewBagForDevOrProd();
 
     if (id != intervention.Id) {
       return NotFound();
@@ -134,7 +128,6 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = supportId;
     ViewBag.CustomerName = customerName;
-    CreateViewBagForDevOrProd();
 
     if (id == null || _context.Intervention == null) {
       return NotFound();
@@ -157,7 +150,6 @@ public class InterventionController : Controller {
   {
     ViewBag.SupportId = intervention.SupportIncidentId;
     ViewBag.CustomerName = customerName;
-    CreateViewBagForDevOrProd();
 
     if (id != intervention.Id) {
       return NotFound();
@@ -239,12 +231,4 @@ public class InterventionController : Controller {
     return (_context.Intervention?.Any(e => e.Id == id)).GetValueOrDefault();
   }
 
-  private void CreateViewBagForDevOrProd() {
-    if (_env.IsDevelopment()) {
-      ViewBag.UrlClient = "";
-    }
-    else {
-      ViewBag.UrlClient = "/bubblevel";
-    }
-  }
 }

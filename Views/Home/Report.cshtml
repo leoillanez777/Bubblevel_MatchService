@@ -1,0 +1,168 @@
+﻿@model X.PagedList.IPagedList<Bubblevel_MatchService.Models.SupportIncident>
+@{
+  ViewData["Title"] = "Report";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Report" method="get" v-on:submit.prevent="onSubmit">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col">
+                <label>State</label>
+                <select id="StateSearch" name="StateSearch" class="form-control" asp-items="ViewBag.States"></select>
+            </div>
+            <div class="col">
+                <input type="hidden" id="CustomerSearch" name="CustomerSearch" v-model="valueCustomer" />
+                <v-autocomplete v-model="valueCustomer" variant="solo"
+                                v-model:search="searchCustomer"
+                                item-title="nameWithEmail"
+                                item-value="id"
+                                label="Customer"
+                                placeholder="All"
+                                :loading="loading"
+                                :items="itemsCustomer" 
+                                clearable multiple chips closable-chips>
+                </v-autocomplete>
+            </div>
+            <div class="col">
+                <input type="hidden" id="ProjectSearch" name="ProjectSearch" v-model="valueProject" />
+                <v-autocomplete v-model="valueProject" variant="solo"
+                                v-model:search="searchProject"
+                                item-title="name"
+                                item-value="id"
+                                label="Project"
+                                :loading="loading"
+                                :items="itemsProject"
+                                clearable multiple chips closable-chips>
+                </v-autocomplete>
+            </div>
+            <div class="col">
+                <div class="form-group mt-4">
+                    <v-btn type="submit" variant="outlined" rounded color="blue" :loading="loading">
+                        <v-icon start icon="mdi-filter-outline"></v-icon>
+                        Filter
+                    </v-btn>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<table class="table table-hover table-bordered">
+    <thead class="table-info">
+        <tr>
+            <th>
+                State
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Summary)
+            </th>
+            <th colspan="2" class="text-center">
+                Customer
+            </th>
+            <th>
+                Project
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Summary)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer!.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer!.Email)
+                </td>
+                <td>
+                    @if (item.Project != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.Project.Name)
+                    }
+                </td>
+            </tr>
+              if (item.Interventions is not null && item.Interventions.Count > 0)
+              {
+                  decimal totalDuration = 0;
+                  <tr>
+                      <td colspan="7">
+                          <table class="table table-sm mb-0">
+                              <caption>@Html.DisplayFor(modelItem => item.Id)</caption>
+                              <thead class="table-light">
+                                  <tr>
+                                      <th>Date</th>
+                                      <th>Description</th>
+                                      <th>Duration</th>
+                                  </tr>
+                              </thead>
+                              @foreach (var interv in item.Interventions)
+                              {
+                                  totalDuration += interv.Duration;
+                                  <tr>
+                                      <td>
+                                          @Html.DisplayFor(modelItem => interv.InterventionDate)
+                                      </td>
+                                      <td>
+                                          @Html.DisplayFor(modelItem => interv.Description)
+                                      </td>
+                                      <td>
+                                          @Html.DisplayFor(modelItem => interv.Duration)
+                                      </td>
+                                  </tr>
+                              }
+                              <tfoot>
+                                  <tr>
+                                      <td colspan="2" class="text-end">Total:</td>
+                                      <td>@Html.DisplayFor(m => totalDuration, "Time")</td>
+                                  </tr>
+                              </tfoot>
+                          </table>
+                      </td>
+                  </tr>
+            }
+        }
+    </tbody>
+</table>
+<div class="pagination">
+    <nav aria-label="Page navigation">
+        <ul class="pagination @(Model.PageCount == 0 ? "visually-hidden":"")">
+            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Report", new {
+                                          page = Model.PageNumber - 1,
+                                          stateSearch = ViewBag.StateSearch,
+                                          customerSearch = ViewBag.CustomerSearch,
+                                          projectSearch = ViewBag.ProjectSearch
+                                      })">Previous</a>
+            </li>
+            <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Report", new {
+                                          page = Model.PageNumber + 1,
+                                          stateSearch = ViewBag.StateSearch,
+                                          customerSearch = ViewBag.CustomerSearch,
+                                          projectSearch = ViewBag.ProjectSearch
+                                      })">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("~/Views/Home/_IndexVue.cshtml");
+    }
+}

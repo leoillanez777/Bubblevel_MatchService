@@ -1,0 +1,31 @@
+﻿<script>
+    const { createApp, ref, onMounted, nextTick } = Vue
+    const { createVuetify } = Vuetify
+    const vuetify = createVuetify()
+
+    createApp({
+        setup() {
+            const model = @Json.Serialize(Model.Total)
+            const loading = ref(false)
+            const valueOfModel = model?.total ?? '0'
+            const select = ref(0)
+
+            const rules = ref({
+                required: value => !!value || 'Required.',
+                validateDecimal: value => {
+                    const decimalRegex = /^\d{1,10}(\.\d{1,2})?$/
+                    return decimalRegex.test(value) || 'Enter a number with maximum 2 decimals and 10 integers'
+                },
+            })
+
+            onMounted(async () => {
+                await nextTick()
+                select.value = Number.parseFloat(valueOfModel)
+            })
+
+            return {
+                loading, select, rules
+            }
+        }
+    }).use(vuetify).mount('#app')
+</script>

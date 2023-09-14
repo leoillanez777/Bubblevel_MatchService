@@ -1,0 +1,91 @@
+﻿<script>
+    const { createApp, ref, watch, onMounted, nextTick } = Vue
+    const { createVuetify } = Vuetify
+    const vuetify = createVuetify()
+
+    createApp({
+        setup() {
+            const pathString = window.location.origin + "@ViewBag.UrlClient"
+            const modelValueCustomer = @Json.Serialize(ViewBag.CustomerSearch)
+            const modelValueProject = @Json.Serialize(ViewBag.ProjectSearch)
+            const loading = ref(false)
+            const itemsCustomer = ref([])
+            const valueCustomer = ref([])
+            const searchCustomer = ref(null)
+            const itemsProject = ref([])
+            const valueProject = ref([])
+            const searchProject = ref(null)
+
+            onMounted(async () => {
+                await nextTick()
+                queryCustomer("")
+                queryProject("")
+            })
+
+            watch(searchCustomer, val => {
+                if (val !== "" && valueCustomer.value === null)
+                    val && val !== valueCustomer.value && queryCustomer(val)
+            })
+
+            const queryCustomer = (v) => {
+                loading.value = true
+                const url = `${pathString}/Customer/GetCustomer?filter=${v}`
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        itemsCustomer.value = data
+                        if (v === "" && modelValueCustomer) {
+                            const myArray = modelValueCustomer.toString().split(",")
+                            for (var index in myArray) {
+                                valueCustomer.value.push(Number.parseInt(myArray[index], 10))
+                            }
+                        }
+                        loading.value = false
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        loading.value = false
+                    });
+            }
+
+            watch(searchProject, val => {
+                if (val !== "" && valueProject.value === null)
+                    val && val !== valueProject.value && queryProject(val)
+            })
+
+            const queryProject = (v) => {
+                loading.value = true
+                const url = `${pathString}/Project/GetProject?filter=${v}`
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        itemsProject.value = data
+                        if (v === "" && modelValueProject) {
+                            const myArray = modelValueProject.toString().split(",")
+                            for (var index in myArray) {
+                                valueProject.value.push(Number.parseInt(myArray[index], 10))
+                            }
+                        }
+                        loading.value = false
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        loading.value = false
+                    });
+            }
+
+            const onSubmit = (e) => {
+                e.preventDefault();
+                loading.value = true;
+                e.target.submit();
+            }
+
+            return {
+                loading, itemsCustomer, valueCustomer, searchCustomer,
+                itemsProject, valueProject, searchProject,
+                queryCustomer, queryProject, onSubmit
+            }
+        }
+    }).use(vuetify).mount('#app')
+</script>
+

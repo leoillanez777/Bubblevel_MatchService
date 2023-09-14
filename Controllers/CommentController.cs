@@ -5,30 +5,27 @@ using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Bubblevel_MatchService.Services.Interfaces;
 
 namespace Bubblevel_MatchService.Controllers;
 
 public class CommentController : Controller {
   private readonly ApplicationDbContext _context;
+  private readonly IStateOfSupport _state;
 
-  public CommentController(ApplicationDbContext context)
+  public CommentController(ApplicationDbContext context, IStateOfSupport state)
   {
     _context = context;
+    _state = state;
   }
 
   // GET: Comment
   public async Task<IActionResult> Index(int supportId, string name, int? page)
   {
-    //// get source view and save in claims.
-    //var userManager = HttpContext.RequestServices
-    //                            .GetRequiredService<UserManager<Areas.Identity.Data.ApplicationUser>>();
-    //// Obtenemos el usuario actual
-    //var user = await userManager.GetUserAsync(HttpContext.User);
-    //Claim sourceViewClaim = new("SourceView", "John");
-    //await userManager.AddClaimAsync(user, sourceViewClaim);
-
     ViewData["SupportIncidentId"] = supportId;
     ViewData["CustomerName"] = name;
+    ViewBag.ReturnUrl = await _state.GetUrlForStateAsync(supportId);
+
     int pageSize = 10;
     int pageNumber = page ?? 1;
     var applicationDbContext = _context.Comment

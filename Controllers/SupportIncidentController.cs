@@ -42,13 +42,14 @@ public class SupportIncidentController : Controller {
       .Include(s => s.Customer)
       .Include(s => s.Comments)
       .Include(s => s.Project)
+      .Include(s => s.Interventions)
       .Where(s => s.State == State.InProgress);
 
     return View(await applicationDbContext.ToPagedListAsync(pageNumber, pageSize));
   }
 
-  // GET: SupportIncident/ListAwaiting
-  public async Task<IActionResult> ListAwaiting(int? page)
+  // GET: SupportIncident/AwaitingList
+  public async Task<IActionResult> AwaitingList(int? page)
   {
     int pageSize = 10;
     int pageNumber = page ?? 1;
@@ -56,7 +57,21 @@ public class SupportIncidentController : Controller {
       .Include(s => s.Customer)
       .Include(s => s.Comments)
       .Include(s => s.Project)
-      .Where(s => s.State == State.Awaiting);
+      .Where(s => s.State.Equals(State.Awaiting) || s.State.Equals(State.OnHold));
+
+    return View(await applicationDbContext.ToPagedListAsync(pageNumber, pageSize));
+  }
+
+  // GET: SupportIncident/SolvedList
+  public async Task<IActionResult> SolvedList(int? page)
+  {
+    int pageSize = 10;
+    int pageNumber = page ?? 1;
+    var applicationDbContext = _context.SupportIncident
+      .Include(s => s.Customer)
+      .Include(s => s.Comments)
+      .Include(s => s.Project)
+      .Where(s => s.State == State.Solved);
 
     return View(await applicationDbContext.ToPagedListAsync(pageNumber, pageSize));
   }
@@ -181,6 +196,7 @@ public class SupportIncidentController : Controller {
   public async Task<IActionResult> Approval(int? id, string stateSource = "pending")
   {
     ViewBag.StateSource = stateSource;
+    ViewBag.pageReturn = stateSource == "awaiting" ? nameof(AwaitingList) : nameof(Index);
     if (id == null || _context.SupportIncident == null) {
       return NotFound();
     }
@@ -253,8 +269,13 @@ public class SupportIncidentController : Controller {
           throw;
         }
       }
-      return RedirectToAction(nameof(Index));
+
+      string nameAction = isFinanciaApproval ? nameof(AwaitingList) : nameof(Index);
+      return RedirectToAction(nameAction);
     }
+
+    ViewBag.pageReturn = stateSource == "awaiting" ? nameof(AwaitingList) : nameof(Index);
+
     return View(supportIncident);
   }
 
@@ -310,6 +331,108 @@ public class SupportIncidentController : Controller {
     }
 
     CreateViewBagForDevOrProd();
+
+    return View(supportIncident);
+  }
+
+  public async Task<IActionResult> Close(int? id)
+  {
+    if (id == null || _context.SupportIncident == null) {
+      return NotFound();
+    }
+
+    var supportincident = await _context.SupportIncident
+      .Include(s => s.Customer)
+      .Include(s => s.Interventions)
+      .Include(s => s.Project)
+      .FirstOrDefaultAsync(m => m.Id == id);
+    if (supportincident == null) {
+      return NotFound();
+    }
+
+    return View(supportincident);
+  }
+
+  // POST: SupportIncident/Close
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> Close([Bind("Id,Summary,CustomerId,State,Total,ProjectId")] SupportIncident supportIncident)
+  {
+    if (supportIncident.CustomerId != 0) {
+      supportIncident.Customer = await _context.Customer.FindAsync(supportIncident.CustomerId);
+    }
+    if (supportIncident.ProjectId != 0) {
+      supportIncident.Project = await _context.Project.FindAsync(supportIncident.ProjectId);
+    }
+    if (ModelState.IsValid) {
+      using var dbContextTransaction = _context.Database.BeginTransaction();
+      try {
+        supportIncident.State = State.Solved;
+        _context.Update(supportIncident);
+        await _context.SaveChangesAsync();
+
+        await dbContextTransaction.CommitAsync();
+
+        return RedirectToAction(nameof(SolvedList));
+      }
+      catch (Exception ex) {
+        await dbContextTransaction.RollbackAsync();
+        // TODO: Missing an exception middleware.
+        throw new Exception(ex.Message, ex);
+      }
+
+    }
+
+    return View(supportIncident);
+  }
+
+  public async Task<IActionResult> ReOpen(int? id)
+  {
+    if (id == null || _context.SupportIncident == null) {
+      return NotFound();
+    }
+
+    var supportincident = await _context.SupportIncident
+      .Include(s => s.Customer)
+      .Include(s => s.Interventions)
+      .Include(s => s.Project)
+      .FirstOrDefaultAsync(m => m.Id == id);
+    if (supportincident == null) {
+      return NotFound();
+    }
+
+    return View(supportincident);
+  }
+
+  // POST: SupportIncident/Close
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> ReOpen([Bind("Id,Summary,CustomerId,State,Total,ProjectId")] SupportIncident supportIncident)
+  {
+    if (supportIncident.CustomerId != 0) {
+      supportIncident.Customer = await _context.Customer.FindAsync(supportIncident.CustomerId);
+    }
+    if (supportIncident.ProjectId != 0) {
+      supportIncident.Project = await _context.Project.FindAsync(supportIncident.ProjectId);
+    }
+    if (ModelState.IsValid) {
+      using var dbContextTransaction = _context.Database.BeginTransaction();
+      try {
+        supportIncident.State = State.InProgress;
+        _context.Update(supportIncident);
+        await _context.SaveChangesAsync();
+
+        await dbContextTransaction.CommitAsync();
+
+        return RedirectToAction(nameof(ListInProgress));
+      }
+      catch (Exception ex) {
+        await dbContextTransaction.RollbackAsync();
+        // TODO: Missing an exception middleware.
+        throw new Exception(ex.Message, ex);
+      }
+
+    }
 
     return View(supportIncident);
   }
