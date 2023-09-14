@@ -11,6 +11,7 @@ namespace Bubblevel_MatchService.Models
     public int Id { get; set; }
 
     [Required]
+    [StringLength(300)]
     public string Summary { get; set; } = null!;
 
     [Column(TypeName = "decimal(18, 2)")]

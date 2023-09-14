@@ -53,6 +53,7 @@
     <Folder Include="Extensions\" />
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="wwwroot\images\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\lib\vuejs\" />

@@ -11,6 +11,7 @@ namespace Bubblevel_MatchService.Models
 
     [Required]
     [Display(Name = "Comment")]
+    [StringLength(300)]
     public string Text { get; set; } = null!;
 
     [Display(Name = "Created At")]

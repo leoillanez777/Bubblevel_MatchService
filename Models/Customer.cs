@@ -10,6 +10,7 @@ public class Customer
   [Display(Name = "ERP")]
   public int Id { get; set; }
   [Required]
+  [StringLength(100)]
   public string Name { get; set; } = null!;
   [Required]
   public string Email { get; set; } = null!;

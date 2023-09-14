@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bubblevel_MatchService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230913155352_Update Project Model v1")]
-    partial class UpdateProjectModelv1
+    [Migration("20230914005312_Update DB vs1")]
+    partial class UpdateDBvs1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,7 +123,8 @@ namespace Bubblevel_MatchService.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
@@ -149,7 +150,8 @@ namespace Bubblevel_MatchService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -230,14 +232,15 @@ namespace Bubblevel_MatchService.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("Duration")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("IntialDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -300,7 +303,8 @@ namespace Bubblevel_MatchService.Migrations
 
                     b.Property<string>("Summary")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<decimal?>("Total")
                         .HasColumnType("decimal(18, 2)");

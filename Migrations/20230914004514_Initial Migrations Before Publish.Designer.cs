@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bubblevel_MatchService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230913155630_Update Project Model v2")]
-    partial class UpdateProjectModelv2
+    [Migration("20230914004514_Initial Migrations Before Publish")]
+    partial class InitialMigrationsBeforePublish
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -230,8 +230,7 @@ namespace Bubblevel_MatchService.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("Duration")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("IntialDate")
                         .HasColumnType("datetime2");
