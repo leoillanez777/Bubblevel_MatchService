@@ -24,6 +24,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options => {
+  // SignIn settings
+  options.SignIn.RequireConfirmedEmail = true;
+  options.SignIn.RequireConfirmedPhoneNumber = false;
+
   // Password settings
   options.Password.RequireDigit = true;
   options.Password.RequireLowercase = true;
@@ -45,7 +49,7 @@ builder.Services.Configure<IdentityOptions>(options => {
 builder.Services.ConfigureApplicationCookie(options => {
   // Cookie settings
   options.Cookie.HttpOnly = true;
-  options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+  options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
   options.LoginPath = "/Identity/Account/Login";
   options.AccessDeniedPath = "/Identity/Account/AccessDenied";
   options.SlidingExpiration = true;

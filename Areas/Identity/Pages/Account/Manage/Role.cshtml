@@ -1,0 +1,68 @@
+﻿@page
+@model RoleModel
+@{
+    ViewData["Title"] = "Roles Admin";
+    ViewData["ActivePage"] = ManageNavPages.Role;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="role-form" method="post">
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Manage User Roles</h2>
+                    Add/Remove Roles for User / <b>@Model.Input.UserName</b>.
+                    <input asp-for="Input.UserID" type="hidden" />
+                    <input asp-for="Input.UserName" type="hidden" />
+                </div>
+                <div class="card-body">
+                    <div class="overflow-scroll" style="max-height: 300px">
+                        @for (int i = 0; i < Model.Input.ListRoles.Count; i++)
+                        {
+                            <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                                <div class="form-check m-1">
+                                    <input type="hidden" asp-for="@Model.Input.ListRoles[i].Rol" />
+                                    <input asp-for="@Model.Input.ListRoles[i].Active" class="form-check-input" />
+                                    <label class="form-check-label" asp-for="@Model.Input.ListRoles[i].Active">
+                                        @Model.Input.ListRoles[i].Rol.ToString()
+                                    </label>
+                                </div>
+
+                                <small>@Bubblevel_MatchService.EnumExtensions.GetDescription(Model.Input.ListRoles[i].Rol)</small>
+                            </a>
+                        }
+                    </div>
+                    <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+                </div>
+                <div class="card-footer">
+                    <div class="container text-center">
+                        <div class="row">
+                            <div class="col">
+                                <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+                            </div>
+                            @if (Model.Input.UserID is not null)
+                            {
+                                <div class="col">
+                                    <button asp-action="Index" asp-controller="ManageUser"
+                                            asp-route-id="@Model.Input.UserID" asp-area=""
+                                       class="w-100 btn btn-secondary">Cancel</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_RoleVue" />
+}

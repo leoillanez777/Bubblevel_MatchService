@@ -11,6 +11,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
   {
   }
 
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+  {
+    base.OnModelCreating(modelBuilder);
+    modelBuilder.SeedData();
+  }
+
   public DbSet<Comment> Comment { get; set; } = default!;
   public DbSet<Customer> Customer { get; set; } = default!;
   public DbSet<EmailSetting> EmailSetting { get; set; } = default!;

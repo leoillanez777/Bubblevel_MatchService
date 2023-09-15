@@ -6,6 +6,8 @@ using Bubblevel_MatchService.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Bubblevel_MatchService.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -20,6 +22,7 @@ public class CommentController : Controller {
   }
 
   // GET: Comment
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentAdd,CommentEdit,CommentDelete")]
   public async Task<IActionResult> Index(int supportId, string name, int? page)
   {
     ViewData["SupportIncidentId"] = supportId;
@@ -35,6 +38,7 @@ public class CommentController : Controller {
   }
 
   // GET: Comment/Details/5
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentAdd,CommentEdit,CommentDelete")]
   public async Task<IActionResult> Details(int? id, int supportId, string name)
   {
 
@@ -56,6 +60,7 @@ public class CommentController : Controller {
   }
 
   // GET: Comment/Create
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentAdd")]
   public IActionResult Create(int supportId, string name)
   {
     ViewData["SupportIncidentId"] = supportId;
@@ -68,6 +73,7 @@ public class CommentController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentAdd")]
   public async Task<IActionResult> Create([Bind("Id,Text,CreatedAt,SupportIncidentId")] Comment comment, string name)
   {
     ViewData["SupportIncidentId"] = comment.SupportIncidentId;
@@ -83,6 +89,7 @@ public class CommentController : Controller {
   }
 
   // GET: Comment/Edit/5
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentEdit")]
   public async Task<IActionResult> Edit(int supportId, string name, int? id)
   {
     ViewData["SupportIncidentId"] = supportId;
@@ -104,6 +111,7 @@ public class CommentController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentEdit")]
   public async Task<IActionResult> Edit(int id, [Bind("Id,Text,CreatedAt,SupportIncidentId")] Comment comment, string name)
   {
 
@@ -135,6 +143,7 @@ public class CommentController : Controller {
   }
 
   // GET: Comment/Delete/5
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentDelete")]
   public async Task<IActionResult> Delete(int? id, int supportId, string name)
   {
 
@@ -158,6 +167,7 @@ public class CommentController : Controller {
   // POST: Comment/Delete/5
   [HttpPost, ActionName("Delete")]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Comment,CommentDelete")]
   public async Task<IActionResult> DeleteConfirmed(int id, string supportId, string name)
   {
     ViewData["SupportIncidentId"] = supportId;

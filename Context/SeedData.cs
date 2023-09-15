@@ -16,9 +16,12 @@ namespace Bubblevel_MatchService.Context
 
     private static async Task EnsureRolesAsync(RoleManager<IdentityRole> roleManager)
     {
-      var alreadyExists = await roleManager.RoleExistsAsync("Admin");
-      if (!alreadyExists) {
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
+      foreach (var rol in Enum.GetValues<EnumRoles>()) {
+        var nameRol = rol.ToString();
+        var alreadyExists = await roleManager.RoleExistsAsync(nameRol);
+        if (!alreadyExists) {
+          await roleManager.CreateAsync(new IdentityRole(nameRol));
+        }
       }
     }
 
@@ -35,7 +38,7 @@ namespace Bubblevel_MatchService.Context
         };
         await userManager.CreateAsync(testUser, "Password123!");
       }
-      await userManager.AddToRoleAsync(testUser, "Admin");
+      await userManager.AddToRoleAsync(testUser, "SuperAdmin");
     }
 
 

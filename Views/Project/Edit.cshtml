@@ -33,12 +33,15 @@
                 <label asp-for="Duration" class="control-label"></label>
                 <input type="hidden" id="Duration" name="Duration" v-model="select" />
                 {{select}}
-                <v-select clearable
-                          v-model="select"
-                          item-title="state"
-                          item-value="abbr"
-                          :items="items"
-                          variant="solo"></v-select>
+                <v-autocomplete v-model="select" variant="solo"
+                                v-model:search="search"
+                                item-title="state"
+                                item-value="abbreviation"
+                                :loading="loading"
+                                :items="items"
+                                hint="Write Hour if not exists"
+                                clearable persistent-hint>
+                </v-autocomplete>
                 <span asp-validation-for="Duration" class="text-danger"></span>
             </div>
             <div class="form-group mt-4">

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
 using Bubblevel_MatchService.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -21,6 +22,8 @@ public class SupportIncidentController : Controller {
   }
 
   // GET: SupportIncident
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Launch,LaunchAdd,LaunchEdit,LaunchDelete")]
   public async Task<IActionResult> Index(int? page)
   {
     int pageSize = 10;
@@ -34,6 +37,8 @@ public class SupportIncidentController : Controller {
   }
 
   // GET: SupportIncident/ListInProgress
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "InProgress,InProgressAdd,InProgressEdit,InProgressDelete")]
   public async Task<IActionResult> ListInProgress(int? page)
   {
     int pageSize = 10;
@@ -49,6 +54,8 @@ public class SupportIncidentController : Controller {
   }
 
   // GET: SupportIncident/AwaitingList
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Awaiting,AwaitingAdd,AwaitingEdit,AwaitingDelete")]
   public async Task<IActionResult> AwaitingList(int? page)
   {
     int pageSize = 10;
@@ -63,6 +70,8 @@ public class SupportIncidentController : Controller {
   }
 
   // GET: SupportIncident/SolvedList
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedClose,SolvedReOpen,SolvedDelete")]
   public async Task<IActionResult> SolvedList(int? page)
   {
     int pageSize = 10;
@@ -77,6 +86,8 @@ public class SupportIncidentController : Controller {
   }
 
   // GET: SupportIncident/Create
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Launch,LaunchAdd")]
   public IActionResult Create(string sourceView)
   {
     ViewBag.SourceView = sourceView;
@@ -90,6 +101,8 @@ public class SupportIncidentController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Launch,LaunchAdd")]
   public async Task<IActionResult> Create([Bind("Id,Summary,CustomerId")] SupportIncident supportIncident)
   {
     var url = $"{Request.Scheme}://{Request.Host}";
@@ -335,6 +348,8 @@ public class SupportIncidentController : Controller {
     return View(supportIncident);
   }
 
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedClose")]
   public async Task<IActionResult> Close(int? id)
   {
     if (id == null || _context.SupportIncident == null) {
@@ -356,6 +371,8 @@ public class SupportIncidentController : Controller {
   // POST: SupportIncident/Close
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedClose")]
   public async Task<IActionResult> Close([Bind("Id,Summary,CustomerId,State,Total,ProjectId")] SupportIncident supportIncident)
   {
     if (supportIncident.CustomerId != 0) {
@@ -386,6 +403,8 @@ public class SupportIncidentController : Controller {
     return View(supportIncident);
   }
 
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedReOpen")]
   public async Task<IActionResult> ReOpen(int? id)
   {
     if (id == null || _context.SupportIncident == null) {
@@ -407,6 +426,8 @@ public class SupportIncidentController : Controller {
   // POST: SupportIncident/Close
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedReOpen")]
   public async Task<IActionResult> ReOpen([Bind("Id,Summary,CustomerId,State,Total,ProjectId")] SupportIncident supportIncident)
   {
     if (supportIncident.CustomerId != 0) {
@@ -438,6 +459,8 @@ public class SupportIncidentController : Controller {
   }
 
   // GET: SupportIncident/Delete/5
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedDelete")]
   public async Task<IActionResult> Delete(int? id)
   {
     if (id == null || _context.SupportIncident == null) {
@@ -458,6 +481,8 @@ public class SupportIncidentController : Controller {
   // POST: SupportIncident/Delete/5
   [HttpPost, ActionName("Delete")]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,SupportIncident,SupportIncidentAdd,SupportIncidentEdit,SupportIncidentDelete," +
+    "Solved,SolvedDelete")]
   public async Task<IActionResult> DeleteConfirmed(int id)
   {
     if (_context.SupportIncident == null) {

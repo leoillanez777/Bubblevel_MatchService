@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bubblevel_MatchService.Controllers;
 
+[Authorize(Roles = "SuperAdmin,Admin")]
 public class SettingController : Controller {
   private readonly ApplicationDbContext _context;
 

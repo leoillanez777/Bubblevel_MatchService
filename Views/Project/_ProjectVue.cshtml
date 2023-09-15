@@ -1,35 +1,56 @@
 ﻿<script>
     const { createApp, ref, watch, onMounted, nextTick } = Vue
     const { createVuetify } = Vuetify
-
-
     const vuetify = createVuetify()
+
+    const pathString = window.location.origin + "@ViewBag.UrlClient"
 
     createApp({
         setup() {
-            let itms = []
-            for (let hours = 0; hours <= 23; hours++) {
-                for (let minutes = 0; minutes <= 45; minutes += 15) {
-                    const state = `${hours > 0 ? hours + ' hr' : ''} ${minutes} min`.trim();
-                    const num = hours + minutes / 60;
-                    const abbr = Number.parseFloat(num).toFixed(2);
-                    itms.push({ state, abbr });
-                }
-            }
-
             const model = @Json.Serialize(Model);
-            const loading = ref(false)
-            const items = ref(itms)
             const valueOfModel = model?.duration ?? ''
+            const loading = ref(false)
+
+            const items = ref([])
+            const search = ref(null)
             const select = ref("")
 
             onMounted(async () => {
                 await nextTick()
-                select.value = valueOfModel
+                select.value = valueOfModel.toString()
+                if (valueOfModel === '') {
+                    querySelections("100")
+                }
+                else {
+                    const valQuery = Number.parseInt(valueOfModel, 10).toString()
+                    querySelections(valQuery)
+                }
             })
 
+            watch(search, val => {
+                if (val !== "" && (select.value === null || select.value === '')) {
+                    val && val !== select.value && querySelections(val)
+                }
+            })
+
+            const querySelections = (v) => {
+                loading.value = true
+                const url = `${pathString}/Project/GetTime?filter=${v}`
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        items.value = data
+                        loading.value = false
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        loading.value = false
+                    });
+            }
+
             return {
-                loading, items, select
+                loading, items, search, select,
+                querySelections
             }
         }
     }).use(vuetify).mount('#app')

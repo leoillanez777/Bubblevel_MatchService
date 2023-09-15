@@ -7,18 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bubblevel_MatchService.Controllers;
 
 public class ProjectController : Controller {
   private readonly ApplicationDbContext _context;
+  private readonly IWebHostEnvironment _env;
 
-  public ProjectController(ApplicationDbContext context)
+  public ProjectController(ApplicationDbContext context, IWebHostEnvironment env)
   {
     _context = context;
+    _env = env;
   }
 
   // GET: Project
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectAdd,ProjectEdit,ProjectDelete")]
   public async Task<IActionResult> Index()
   {
     return _context.Project != null ?
@@ -27,6 +31,7 @@ public class ProjectController : Controller {
   }
 
   // GET: Json data
+  [AllowAnonymous]
   public async Task<IActionResult> GetProject(string? filter)
   {
     filter = filter?.ToLower();
@@ -45,7 +50,26 @@ public class ProjectController : Controller {
     return Json(filteredCustomers);
   }
 
+  [AllowAnonymous]
+  public IActionResult GetTime(int filter)
+  {
+    int min = filter - 100;
+    if (min < 0) {
+      min = 0;
+    }
+    int max = Math.Min(int.MaxValue, filter + 50);
+    var timeItems = from hours in Enumerable.Range(min, max)
+                    from minutes in new[] { 0, 15, 30, 45 }
+                    select new TimeItem {
+                      State = Tools.BuildStateText(hours, minutes),
+                      Abbreviation = Tools.BuildAbbreviation(hours, minutes)
+                    };
+
+    return Json(timeItems);
+  }
+
   // GET: Project/Details/5
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectAdd,ProjectEdit,ProjectDelete")]
   public async Task<IActionResult> Details(int? id)
   {
     if (id == null || _context.Project == null) {
@@ -62,8 +86,10 @@ public class ProjectController : Controller {
   }
 
   // GET: Project/Create
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectAdd")]
   public IActionResult Create()
   {
+    CreateViewBagForDevOrProd();
     return View();
   }
 
@@ -72,17 +98,21 @@ public class ProjectController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectAdd")]
   public async Task<IActionResult> Create([Bind("Id,Name,IntialDate,Duration,Closed")] Project project)
   {
+    CreateViewBagForDevOrProd();
     if (ModelState.IsValid) {
       _context.Add(project);
       await _context.SaveChangesAsync();
       return RedirectToAction(nameof(Index));
     }
+
     return View(project);
   }
 
   // GET: Project/Edit/5
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectEdit")]
   public async Task<IActionResult> Edit(int? id)
   {
     if (id == null || _context.Project == null) {
@@ -93,6 +123,9 @@ public class ProjectController : Controller {
     if (project == null) {
       return NotFound();
     }
+
+    CreateViewBagForDevOrProd();
+
     return View(project);
   }
 
@@ -101,6 +134,7 @@ public class ProjectController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectEdit")]
   public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IntialDate,Duration,Closed")] Project project)
   {
     if (id != project.Id) {
@@ -122,10 +156,14 @@ public class ProjectController : Controller {
       }
       return RedirectToAction(nameof(Index));
     }
+
+    CreateViewBagForDevOrProd();
+
     return View(project);
   }
 
   // GET: Project/Delete/5
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectDelete")]
   public async Task<IActionResult> Delete(int? id)
   {
     if (id == null || _context.Project == null) {
@@ -144,6 +182,7 @@ public class ProjectController : Controller {
   // POST: Project/Delete/5
   [HttpPost, ActionName("Delete")]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectDelete")]
   public async Task<IActionResult> DeleteConfirmed(int id)
   {
     if (_context.Project == null) {
@@ -158,9 +197,18 @@ public class ProjectController : Controller {
     return RedirectToAction(nameof(Index));
   }
 
-
   private bool ProjectExists(int id)
   {
     return (_context.Project?.Any(e => e.Id == id)).GetValueOrDefault();
+  }
+
+  private void CreateViewBagForDevOrProd()
+  {
+    if (_env.IsDevelopment()) {
+      ViewBag.UrlClient = "";
+    }
+    else {
+      ViewBag.UrlClient = "/bubblevel";
+    }
   }
 }

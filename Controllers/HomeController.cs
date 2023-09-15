@@ -9,6 +9,7 @@ using X.PagedList;
 
 namespace Bubblevel_MatchService.Controllers;
 
+[Authorize]
 public class HomeController : Controller {
 
   private readonly ILogger<HomeController> _logger;
@@ -32,6 +33,7 @@ public class HomeController : Controller {
     return View();
   }
 
+  [Authorize(Roles = "SuperAdmin,Admin,Report")]
   public async Task<IActionResult> Report(string sortOrder, string stateSearch, string customerSearch, string projectSearch, int? page)
   {
     if (stateSearch != null || customerSearch != null) {

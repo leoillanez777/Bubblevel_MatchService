@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -19,6 +20,7 @@ public class CustomerController : Controller {
   }
 
   // GET: Customer
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerAdd,CustomerEdit,CustomerDelete")]
   public async Task<IActionResult> Index()
   {
     return _context.Customer != null ?
@@ -28,6 +30,7 @@ public class CustomerController : Controller {
 
   // GET: Customer/GetCustomer
   // Json data
+  [AllowAnonymous]
   public async Task<IActionResult> GetCustomer(string? filter)
   {
     filter = filter?.ToLower();
@@ -49,6 +52,7 @@ public class CustomerController : Controller {
   }
 
   // GET: Customer/Details/5
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerAdd,CustomerEdit,CustomerDelete")]
   public async Task<IActionResult> Details(int? id)
   {
     if (id == null || _context.Customer == null) {
@@ -65,6 +69,7 @@ public class CustomerController : Controller {
   }
 
   // GET: Customer/Create
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerAdd")]
   public IActionResult Create()
   {
     return View();
@@ -75,6 +80,7 @@ public class CustomerController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerAdd")]
   public async Task<IActionResult> Create([Bind("Id,Name,Email,HasActiveSupportPlan")] Customer customer)
   {
     if (ModelState.IsValid) {
@@ -91,6 +97,7 @@ public class CustomerController : Controller {
   }
 
   [HttpPost]
+  [AllowAnonymous]
   public async Task<IActionResult> CreateCustomer([FromBody]CustomerDTO customerDTO)
   {
 
@@ -120,6 +127,7 @@ public class CustomerController : Controller {
   }
 
   // GET: Customer/Edit/5
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerEdit")]
   public async Task<IActionResult> Edit(int? id)
   {
     if (id == null || _context.Customer == null) {
@@ -138,6 +146,7 @@ public class CustomerController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerEdit")]
   public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,HasActiveSupportPlan")] Customer customer)
   {
     if (id != customer.Id) {
@@ -169,6 +178,7 @@ public class CustomerController : Controller {
   }
 
   // GET: Customer/Delete/5
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerDelete")]
   public async Task<IActionResult> Delete(int? id)
   {
     if (id == null || _context.Customer == null) {
@@ -187,6 +197,7 @@ public class CustomerController : Controller {
   // POST: Customer/Delete/5
   [HttpPost, ActionName("Delete")]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Customer,CustomerDelete")]
   public async Task<IActionResult> DeleteConfirmed(int id)
   {
     if (_context.Customer == null) {

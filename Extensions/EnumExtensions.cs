@@ -12,5 +12,23 @@ public static class EnumExtensions {
       .GetCustomAttribute<DisplayAttribute>()!
       .GetName()!;
   }
+
+  public static string GetDescription(this Enum enumValue)
+  {
+    var enumType = enumValue.GetType();
+    var member = enumType.GetMember(enumValue.ToString()).FirstOrDefault();
+
+    if (member is not null) {
+      var displayAttr = member.GetCustomAttribute<DisplayAttribute>();
+      if (displayAttr is not null) {
+        if (displayAttr.Description is not null) {
+          return displayAttr.Description;
+        }
+      }
+    }
+
+    // Retornar valor por defecto si no se encuentra descripción
+    return enumValue.ToString();
+  }
 }
 

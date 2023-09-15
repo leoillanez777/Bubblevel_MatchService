@@ -7,6 +7,9 @@ using Bubblevel_MatchService.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Bubblevel_MatchService.Context;
 using Bubblevel_MatchService.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+
 namespace Bubblevel_MatchService.Controllers;
 
 public class InterventionController : Controller {
@@ -20,6 +23,7 @@ public class InterventionController : Controller {
   }
 
   // GET: Intervention
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionAdd,InterventionEdit,InterventionDelete")]
   public async Task<IActionResult> Index(int id)
   {
     var applicationDbContext = _context.Intervention
@@ -37,6 +41,7 @@ public class InterventionController : Controller {
   }
 
   // GET: Intervention/Create
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionAdd")]
   public IActionResult Create(int supportId, string customerName)
   {
     ViewBag.SupportId = supportId;
@@ -50,6 +55,7 @@ public class InterventionController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionAdd")]
   public async Task<IActionResult> Create([Bind("Id,Description,InterventionDate,Duration,SupportIncidentId")] Intervention intervention, string customerName)
   {
     if (intervention.SupportIncidentId != 0) {
@@ -69,6 +75,7 @@ public class InterventionController : Controller {
   }
 
   // GET: Intervention/Edit/5
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionEdit")]
   public async Task<IActionResult> Edit(int? id, int supportId, string customerName)
   {
     ViewBag.SupportId = supportId;
@@ -91,6 +98,7 @@ public class InterventionController : Controller {
   // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
   [HttpPost]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionEdit")]
   public async Task<IActionResult> Edit(int id, [Bind("Id,Description,InterventionDate,Duration,SupportIncidentId")] Intervention intervention, string customerName)
   {
     ViewBag.SupportId = intervention.SupportIncidentId;
@@ -193,6 +201,7 @@ public class InterventionController : Controller {
   }
 
   // GET: Intervention/Delete/5
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionDelete")]
   public async Task<IActionResult> Delete(int? id)
   {
     if (id == null || _context.Intervention == null) {
@@ -212,6 +221,7 @@ public class InterventionController : Controller {
   // POST: Intervention/Delete/5
   [HttpPost, ActionName("Delete")]
   [ValidateAntiForgeryToken]
+  [Authorize(Roles = "SuperAdmin,Admin,Intervention,InterventionDelete")]
   public async Task<IActionResult> DeleteConfirmed(int id)
   {
     if (_context.Intervention == null) {
