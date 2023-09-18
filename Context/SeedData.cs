@@ -34,6 +34,7 @@ namespace Bubblevel_MatchService.Context
           FirstName = "Gonçalo",
           LastName = "Conde",
           UserName = "info@bubblevel.com",
+          EmailConfirmed = true,
           Email = "info@bubblevel.com",
         };
         await userManager.CreateAsync(testUser, "Password123!");
@@ -47,11 +48,6 @@ namespace Bubblevel_MatchService.Context
       await roleManager.CreateAsync(new IdentityRole(EnumRoles.SuperAdmin.GetDisplayName()));
     }
 
-    // UNDONE: add setting data.
-    //private static async Task EnsureEmailSetting()
-    //{
-
-    //}
   }
 }
 

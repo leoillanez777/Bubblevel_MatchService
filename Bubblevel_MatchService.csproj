@@ -56,6 +56,18 @@
     <Folder Include="wwwroot\images\" />
     <Folder Include="Migrations\" />
     <Folder Include="Views\ManageUser\" />
+    <Folder Include="wwwroot\lib\chart.js\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\chunks\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\controllers\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\core\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\elements\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\helpers\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\platform\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\plugins\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\scales\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\types\" />
+    <Folder Include="wwwroot\lib\chart.js\dist\plugins\plugin.filler\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\lib\vuejs\" />
@@ -68,5 +80,17 @@
     <Content Remove="wwwroot\lib\jquery-validation\dist\localization\" />
     <Content Remove="wwwroot\lib\tailwindcss\" />
     <Content Remove="wwwroot\images\" />
+    <Content Remove="wwwroot\lib\chart.js\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\chunks\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\controllers\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\core\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\elements\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\helpers\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\platform\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\plugins\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\scales\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\types\" />
+    <Content Remove="wwwroot\lib\chart.js\dist\plugins\plugin.filler\" />
   </ItemGroup>
 </Project>

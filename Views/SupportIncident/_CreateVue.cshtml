@@ -103,11 +103,17 @@
                     });
             }
 
+            const onSubmit = (e) => {
+                e.preventDefault();
+                loading.value = true;
+                e.target.submit();
+            }
+
             return {
                 loading, items, search, select,
                 dialog, dialogPartial,
                 rules, email, name, text, snackbar, colorSnack,
-                openDialog, querySelections, submit
+                openDialog, querySelections, submit, onSubmit
             }
         }
     }).use(vuetify).mount('#app')

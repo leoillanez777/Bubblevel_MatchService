@@ -2,8 +2,223 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    
+<script src="~/lib/chart.js/dist/chart.umd.min.js"></script>
+
+<div class="container text-center">
+    <h1 class="display-4 mb-3">Welcome</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+            <div class="card h-100 shadow-lg bg-body rounded">
+                <div class="card-body">
+                    <h5 class="card-title">Latest Statistics</h5>
+                    <p class="card-text">
+                        <canvas id="chartStatistics"></canvas>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Current Year</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Average Support</h5>
+                    <p class="card-text">
+                        <canvas id="chartAvgSupport"></canvas>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 g-4 mt-4">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Support by State</h5>
+                    <p class="card-text">
+                        <canvas id="chartSupport"></canvas>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Project vs Interventions</h5>
+                    <p class="card-text">
+                        <canvas id="chartProject"></canvas>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Last updated 3 mins ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
+
+
+
+<script>
+    const colorBGTransparency = [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(201, 203, 207, 0.2)'
+    ]
+    const colorBG = [
+        'rgb(255, 99, 132)',
+        'rgb(75, 192, 192)',
+        'rgb(255, 205, 86)',
+        'rgb(201, 203, 207)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 159, 64)',
+        'rgb(153, 102, 255)'
+    ]
+    const chartStatistics = document.getElementById('chartStatistics');
+    const dataStatistics = @Json.Serialize(ViewBag.Statistics)
+    let dataInter = [];
+    let lblInter = [];
+    for (var ser in dataStatistics) {
+        dataInter.push(dataStatistics[ser].count);
+        lblInter.push(dataStatistics[ser].monthName);
+    }
+    new Chart(chartStatistics, {
+        type: 'bar',
+        data: {
+            labels: lblInter,
+            datasets: [{
+                label: '# of Interventions',
+                data: dataInter,
+                borderWidth: 1,
+                backgroundColor: colorBGTransparency
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const chartAvgSupport = document.getElementById('chartAvgSupport');
+    let dataAvg = [];
+    let lblAvg = [];
+    const dataAvgSupport = @Json.Serialize(ViewBag.AvgSupport)
+    for (let i = 0; i < dataAvgSupport.length; i++) {
+        const avg = dataAvgSupport[i];
+        dataAvg.push(avg.count);
+        lblAvg.push(avg.monthName);
+    }
+    new Chart(chartAvgSupport, {
+        type: 'polarArea',
+        data: {
+            labels: lblAvg,
+            datasets: [{
+                label: 'By customer',
+                data: dataAvg,
+                backgroundColor: colorBG
+            }]
+        },
+        options: {}
+    });
+
+    const chartSupport = document.getElementById('chartSupport');
+    const dataSupportState = @Json.Serialize(ViewBag.SupportState)
+    let dataSupport = [];
+    let lblSupport = [];
+    for (let i = 0; i < dataSupportState.length; i++) {
+        const sup = dataSupportState[i];
+        dataSupport.push(sup.count);
+        lblSupport.push(sup.monthName);
+    }
+    new Chart(chartSupport, {
+        type: 'doughnut',
+        data: {
+            labels: lblSupport,
+            datasets: [{
+                label: 'Support by State',
+                data: dataSupport,
+                backgroundColor: colorBG,
+                hoverOffset: 4
+            }]
+        },
+        options: {}
+    });
+
+    const chartProject = document.getElementById('chartProject');
+    const dataProjectStats = @Json.Serialize(ViewBag.ProjectStats)
+    let dataProject1 = [];
+    let dataProject2 = [];
+    let lblProject = [];
+    for (let i = 0; i < dataProjectStats.length; i++) {
+        const pro = dataProjectStats[i];
+        dataProject1.push(pro.projectDuration);
+        dataProject2.push(pro.totalInterventionsDuration);
+        lblProject.push(pro.projectName);
+    }
+    const dataProject = {
+        labels: lblProject,
+        datasets: [
+            {
+                label: 'Project',
+                data: dataProject1,
+                backgroundColor: 'rgb(75, 192, 192)',
+            },
+            {
+                label: 'Intervention',
+                data: dataProject2,
+                backgroundColor: 'rgb(54, 162, 235)',
+            },
+        ]
+    };
+
+    new Chart(chartProject, {
+        type: 'bar',
+        data: dataProject,
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Hourly Duration'
+                },
+            },
+            responsive: true,
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true
+                }
+            }
+        }
+    });
+
+    function formatDuration(duration) {
+        const hours = Math.floor(duration);
+        const mins = Math.round((duration - hours) * 60);
+
+        let hoursString = `${hours}hr`;
+        if (hours < 1) {
+            hoursString = '';
+        }
+
+        let minsString = `${mins}min`;
+        if (mins < 1) {
+            minsString = '';
+        }
+
+        return `${hoursString} ${minsString}`.trim();
+    }
+</script>
 

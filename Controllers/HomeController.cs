@@ -6,6 +6,9 @@ using Bubblevel_MatchService.Context;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
+using System.Globalization;
+using static Bubblevel_MatchService.Controllers.HomeController;
+using Microsoft.CodeAnalysis;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -25,6 +28,10 @@ public class HomeController : Controller {
 
   public IActionResult Index()
   {
+    LatestStatistics();
+    AvgSupport();
+    SupportByState();
+    DurationVsProject();
     return View();
   }
 
@@ -110,6 +117,100 @@ public class HomeController : Controller {
     }
   }
 
+  #region DashBoard
+
+  private void LatestStatistics()
+  {
+    int currentYear = DateTime.Now.Year;
+    var statistics = _context.Intervention
+    .GroupBy(i => i.InterventionDate!.Value.Month)
+    .Select(g => new MonthlyStatistics {
+      MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key),
+      Count = g.Count()
+    })
+    .ToList();
+    ViewBag.Statistics = statistics;
+  }
+
+  private void AvgSupport()
+  {
+    try {
+      var avgSupport = _context.SupportIncident
+      .GroupBy(s => s.CustomerId)
+      .Select(g => new MonthlyStatistics {
+        MonthName = g.FirstOrDefault()!.Customer!.Name,
+        Count = g.Count()
+      })
+      .ToList();
+      ViewBag.AvgSupport = avgSupport;
+    }
+    catch {
+      ViewBag.AvgSupport = new MonthlyStatistics();
+    }
+  }
+
+  private void SupportByState()
+  {
+    try {
+      var supportState = _context.SupportIncident
+        .GroupBy(s => s.State)
+        .Select(g => new MonthlyStatistics {
+          MonthName = g.FirstOrDefault()!.State.GetDisplayName(),
+          Count = g.Count()
+        })
+        .ToList();
+      ViewBag.SupportState = supportState;
+    }
+    catch {
+      ViewBag.SupportState = new MonthlyStatistics();
+    }
+
+  }
+
+  private void DurationVsProject()
+  {
+    try {
+      var projectStats = _context.Project
+        .Select(p => new ProjectStatistics {
+          ProjectId = p.Id,
+          ProjectName = p.Name,
+          ProjectDuration = p.Duration
+        })
+        .ToList();
+
+      var interventionDurations = _context.Intervention
+        .GroupBy(i => i.SupportIncident!.ProjectId)
+        .Select(g => new {
+          ProjectId = g.Key,
+          TotalDuration = g.Sum(i => i.Duration)
+        });
+
+      foreach (var stats in projectStats) {
+        stats.TotalInterventionsDuration = interventionDurations
+           .FirstOrDefault(d => d.ProjectId == stats.ProjectId)?.TotalDuration ?? decimal.Zero;
+      }
+      ViewBag.ProjectStats = projectStats;
+    }
+    catch {
+      ViewBag.ProjectStats = new ProjectStatistics();
+    }
+
+  }
+
+
+  public class MonthlyStatistics {
+    public string MonthName { get; set; } = null!;
+    public int Count { get; set; }
+  }
+
+  public class ProjectStatistics {
+    public int ProjectId { get; set; }
+    public string ProjectName { get; set; } = null!;
+    public decimal ProjectDuration { get; set; }
+    public decimal TotalInterventionsDuration { get; set; }
+  }
+
+  #endregion
 
   public class StateList
   {

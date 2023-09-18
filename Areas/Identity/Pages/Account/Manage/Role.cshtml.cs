@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Bubblevel_MatchService.Areas.Identity.Pages.Account.Manage {
 
-  [Authorize(Roles = "Admin")]
+  [Authorize(Roles = "SuperAdmin")]
   public class RoleModel : PageModel {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RoleModel> _logger;
