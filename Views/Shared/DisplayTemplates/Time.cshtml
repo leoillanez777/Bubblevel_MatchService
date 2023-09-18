@@ -1,8 +1,14 @@
 ﻿@model decimal
 
 @{
-    int hours = (int)Math.Floor(Model);
-    int minutes = (int)((Model - hours) * 60);
+  TimeSpan ts = TimeSpan.FromHours(Math.Abs((double)Model));
+  int hours = ((int)ts.TotalHours);
+  int minutes = ts.Minutes;
+
+  if (Model < 0)
+  {
+      hours *= -1;
+  }
 }
 
 <span class="badge rounded-pill text-bg-light m-2">

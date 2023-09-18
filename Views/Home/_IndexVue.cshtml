@@ -1,4 +1,5 @@
-﻿<script>
+﻿<script type="text/javascript" src="~/lib/table2csv/dist/table2csv.js"></script>
+<script>
     const { createApp, ref, watch, onMounted, nextTick } = Vue
     const { createVuetify } = Vuetify
     const vuetify = createVuetify()
@@ -8,6 +9,7 @@
             const pathString = window.location.origin + "@ViewBag.UrlClient"
             const modelValueCustomer = @Json.Serialize(ViewBag.CustomerSearch)
             const modelValueProject = @Json.Serialize(ViewBag.ProjectSearch)
+            const modelValueState = @Json.Serialize(ViewBag.StateSearch)
             const loading = ref(false)
             const itemsCustomer = ref([])
             const valueCustomer = ref([])
@@ -15,11 +17,14 @@
             const itemsProject = ref([])
             const valueProject = ref([])
             const searchProject = ref(null)
+            const itemsState = ref([])
+            const valueState = ref([])
 
             onMounted(async () => {
                 await nextTick()
                 queryCustomer("")
                 queryProject("")
+                queryState()
             })
 
             watch(searchCustomer, val => {
@@ -74,16 +79,45 @@
                     });
             }
 
+            const queryState = () => {
+                loading.value = true
+                const url = `${pathString}/Home/GetState`
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        itemsState.value = data
+                        if (modelValueState) {
+                            const myArray = modelValueState.toString().split(",")
+                            for (var index in myArray) {
+                                valueState.value.push(Number.parseInt(myArray[index], 10))
+                            }
+                        }
+                        loading.value = false
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        loading.value = false
+                    });
+            }
+
+            const onExport = (e) => {
+                e.preventDefault()
+                loading.value = true
+                e.target.submit()
+                loading.value = false
+            }
+
             const onSubmit = (e) => {
-                e.preventDefault();
-                loading.value = true;
-                e.target.submit();
+                e.preventDefault()
+                loading.value = true
+                e.target.submit()
             }
 
             return {
                 loading, itemsCustomer, valueCustomer, searchCustomer,
                 itemsProject, valueProject, searchProject,
-                queryCustomer, queryProject, onSubmit
+                itemsState, valueState, queryState,
+                queryCustomer, queryProject, onSubmit, onExport
             }
         }
     }).use(vuetify).mount('#app')

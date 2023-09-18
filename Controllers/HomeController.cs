@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 using System.Globalization;
-using static Bubblevel_MatchService.Controllers.HomeController;
 using Microsoft.CodeAnalysis;
+using System.Text.Json;
 
 namespace Bubblevel_MatchService.Controllers;
 
@@ -43,7 +43,7 @@ public class HomeController : Controller {
   [Authorize(Roles = "SuperAdmin,Admin,Report")]
   public async Task<IActionResult> Report(string sortOrder, string stateSearch, string customerSearch, string projectSearch, int? page)
   {
-    if (stateSearch != null || customerSearch != null) {
+    if (!string.IsNullOrEmpty(stateSearch) || !string.IsNullOrEmpty(customerSearch)) {
       page = 1;
     }
 
@@ -52,53 +52,120 @@ public class HomeController : Controller {
     ViewBag.StateSearch = String.IsNullOrEmpty(stateSearch) ? null : stateSearch;
     ViewBag.CustomerSearch = String.IsNullOrEmpty(customerSearch) ? null : customerSearch;
     ViewBag.ProjectSearch = String.IsNullOrEmpty(projectSearch) ? null : projectSearch;
-
-    List<StateList> stateLists = new() { new StateList() { Value = "", Text = "ALL"} };
-    foreach (var item in Enum.GetValues<State>()) {
-      stateLists.Add(new StateList() {
-        Text = item.GetDisplayName(),
-        Value = item.ToString()
-      });
-    }
-    ViewData["States"] = new SelectList(stateLists, "Value", "Text", stateSearch);
     CreateViewBagForDevOrProd();
 
-    var applicationDbContext = await _context.SupportIncident
+    var query = _context.SupportIncident
       .Include(s => s.Customer)
       .Include(s => s.Interventions)
       .Include(s => s.Project)
-      .ToListAsync();
+      .AsQueryable();
 
-    if (stateSearch != null) {
-      State stateFind = Enum.Parse<State>(stateSearch);
-      applicationDbContext = applicationDbContext.Where(s => s.State == stateFind).ToList();
-    }
-
-    if (customerSearch != null) {
-      string[] listId = customerSearch.Split(",");
-      List<int> customerIds = listId.Select(int.Parse).ToList();
-
-      if (customerIds.Any()) {
-        applicationDbContext = applicationDbContext
-          .Where(s => customerIds.Contains(s.CustomerId))
-          .ToList();
+    if (!string.IsNullOrEmpty(stateSearch)) {
+      var stateIds = stateSearch.Split(",").Select(Enum.Parse<State>).ToList();
+      if (stateIds.Any()) {
+        query = query.Where(s => stateIds.Contains(s.State));
       }
     }
 
-    if (projectSearch != null) {
-      string[] listProjectId = projectSearch.Split(",");
-      List<int> projectIds = listProjectId.Select(int.Parse).ToList();
+    if (!string.IsNullOrEmpty(customerSearch)) {
+      var customerIds = customerSearch.Split(",").Select(int.Parse).ToList();
+      if (customerIds.Any()) {
+        query = query.Where(s => customerIds.Contains(s.CustomerId));
+      }
+    }
 
+    if (!string.IsNullOrEmpty(projectSearch)) {
+      var projectIds = projectSearch.Split(",").Select(int.Parse).ToList();
       if (projectIds.Any()) {
-        applicationDbContext = applicationDbContext
-          .Where(s => s.ProjectId != null && projectIds.Contains(s.ProjectId.Value))
-          .ToList();
+        query = query.Where(s => s.ProjectId != null && projectIds.Contains(s.ProjectId.Value));
       }
     }
 
     int pageSize = 10;
     int pageNumber = page ?? 1;
-    return View(await applicationDbContext.ToPagedListAsync(pageNumber, pageSize));
+    return View(await query.ToPagedListAsync(pageNumber, pageSize));
+  }
+
+  [HttpPost]
+  public async Task<IActionResult> ReportExport(string stateSearch, string customerSearch, string projectSearch)
+  {
+    
+    var query = _context.SupportIncident
+      .Include(s => s.Customer)
+      .Include(s => s.Interventions)
+      .Include(s => s.Project)
+      .Include(s => s.Comments)
+      .AsQueryable();
+
+    if (!string.IsNullOrEmpty(stateSearch)) {
+      var stateIds = stateSearch.Split(",").Select(Enum.Parse<State>).ToList();
+      if (stateIds.Any()) {
+        query = query.Where(s => stateIds.Contains(s.State));
+      }
+    }
+
+    if (!string.IsNullOrEmpty(customerSearch)) {
+      var customerIds = customerSearch.Split(",").Select(int.Parse).ToList();
+      if (customerIds.Any()) {
+        query = query.Where(s => customerIds.Contains(s.CustomerId));
+      }
+    }
+
+    if (!string.IsNullOrEmpty(projectSearch)) {
+      var projectIds = projectSearch.Split(",").Select(int.Parse).ToList();
+      if (projectIds.Any()) {
+        query = query.Where(s => s.ProjectId != null && projectIds.Contains(s.ProjectId.Value));
+      }
+    }
+
+    var incidents = await query.ToListAsync();
+
+    // Create CSV 
+    var csv = new System.Text.StringBuilder();
+    csv.AppendLine("State;Incident Number;Summary;Customer;Project;Duration Project;Interventions;Comments"); // Header
+
+    foreach (var row in incidents) {
+      var commonData = $"{row.State.GetDisplayName()};{row.Id};{row.Summary};" +
+        $"{(row.Customer is not null ? row.Customer.Name: string.Empty)};" +
+        $"{(row.Project is not null ? row.Project.Name : string.Empty)};" +
+        $"{(row.Project is not null ? row.Project.Duration : decimal.Zero)}";
+
+      var interventionsData = row.Interventions?.Select(i => new
+      {
+        date = i.InterventionDate,
+        description = i.Description,
+        duration = i.Duration
+      });
+
+      var commentsData = row.Comments?.Select(c => new
+      {
+        summary = c.Text
+      });
+
+      var interventionsJson = JsonSerializer.Serialize(interventionsData);
+      var commentsJson = JsonSerializer.Serialize(commentsData);
+
+      csv.AppendLine($"{commonData};{interventionsJson};{commentsJson}");
+    }
+
+    // Setear headers para que se descargue como CSV
+    return File(System.Text.Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", "data.csv");
+  }
+
+  // GET: Home/GetState
+  // Json data
+  [AllowAnonymous]
+  public IActionResult GetState()
+  {
+    IQueryable<State> query = Enum.GetValues<State>().AsQueryable();
+
+    var filteredCustomers = query
+        .Select(s => new {
+          Id = s,
+          Name = s.GetDisplayName()
+        }).ToList();
+
+    return Json(filteredCustomers);
   }
 
   [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -122,14 +189,20 @@ public class HomeController : Controller {
   private void LatestStatistics()
   {
     int currentYear = DateTime.Now.Year;
-    var statistics = _context.Intervention
-    .GroupBy(i => i.InterventionDate!.Value.Month)
-    .Select(g => new MonthlyStatistics {
-      MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key),
-      Count = g.Count()
-    })
-    .ToList();
-    ViewBag.Statistics = statistics;
+    try {
+      var statistics = _context.Intervention
+      .GroupBy(i => i.InterventionDate.Month)
+      .Select(g => new MonthlyStatistics {
+        MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Key),
+        Count = g.Count()
+      })
+      .ToList();
+
+      ViewBag.Statistics = statistics;
+    }
+    catch {
+      ViewBag.Statistics = new MonthlyStatistics();
+    }
   }
 
   private void AvgSupport()

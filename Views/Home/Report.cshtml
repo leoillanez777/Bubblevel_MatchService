@@ -8,8 +8,17 @@
     <div class="container text-center">
         <div class="row">
             <div class="col">
-                <label>State</label>
-                <select id="StateSearch" name="StateSearch" class="form-control" asp-items="ViewBag.States"></select>
+                <input type="hidden" id="StateSearch" name="StateSearch" v-model="valueState" />
+                <v-select clearable multiple
+                          label="State"
+                          item-title="name"
+                          item-value="id"
+                          :loading="loading"
+                          :items="itemsState"
+                          v-model="valueState"
+                          placeholder="All"
+                          variant="solo">
+                </v-select>
             </div>
             <div class="col">
                 <input type="hidden" id="CustomerSearch" name="CustomerSearch" v-model="valueCustomer" />
@@ -31,6 +40,7 @@
                                 item-title="name"
                                 item-value="id"
                                 label="Project"
+                                placeholder="All"
                                 :loading="loading"
                                 :items="itemsProject"
                                 clearable multiple chips closable-chips>
@@ -38,7 +48,8 @@
             </div>
             <div class="col">
                 <div class="form-group mt-4">
-                    <v-btn type="submit" variant="outlined" rounded color="blue" :loading="loading">
+                    <v-btn type="submit" size="x-large"
+                           variant="outlined" rounded color="deep-orange-darken-1" :loading="loading">
                         <v-icon start icon="mdi-filter-outline"></v-icon>
                         Filter
                     </v-btn>
@@ -48,7 +59,21 @@
     </div>
 </form>
 
-<table class="table table-hover table-bordered">
+<table id="tblExport" class="table table-hover table-bordered caption-top">
+    <caption>
+        <form asp-action="ReportExport" method="post" v-on:submit.prevent="onExport">
+            <input type="hidden" id="StateSearch" name="StateSearch" v-model="valueState" />
+            <input type="hidden" id="ProjectSearch" name="ProjectSearch" v-model="valueProject" />
+            <input type="hidden" id="CustomerSearch" name="CustomerSearch" v-model="valueCustomer" />
+            <v-btn type="submit"
+                   variant="outlined"
+                   rounded color="light-blue-darken-4"
+                   :loading="loading">
+                <v-icon start icon="mdi-export"></v-icon>
+                Export all page to CSV
+            </v-btn>
+        </form>
+    </caption>
     <thead class="table-info">
         <tr>
             <th>
@@ -103,52 +128,57 @@
                     }
                 </td>
             </tr>
-              if (item.Interventions is not null && item.Interventions.Count > 0)
-              {
-                  decimal totalDuration = 0;
-                  <tr>
-                      <td colspan="7">
-                          <table class="table table-sm mb-0">
-                              <caption>@Html.DisplayFor(modelItem => item.Id)</caption>
-                              <thead class="table-light">
-                                  <tr>
-                                      <th>Date</th>
-                                      <th>Description</th>
-                                      <th>Duration</th>
-                                  </tr>
-                              </thead>
-                              @foreach (var interv in item.Interventions)
-                                {
-                                    totalDuration += interv.Duration;
-                                  <tr>
-                                      <td>
-                                          @Html.DisplayFor(modelItem => interv.InterventionDate)
-                                      </td>
-                                      <td>
-                                          @Html.DisplayFor(modelItem => interv.Description)
-                                      </td>
-                                      <td>
-                                          @Html.DisplayFor(modelItem => interv.Duration)
-                                      </td>
-                                  </tr>
-                                }
-                          <tfoot>
-                              <tr>
-                                  <td colspan="2" class="text-end">Total:</td>
-                                  <td>@Html.DisplayFor(m => totalDuration, "Time")</td>
-                              </tr>
-                              <tr>
-                                  <td colspan="2" class="text-end">Difference:</td>
-                                  @{
-                                    decimal projectDuration = item.Project is null ? 0 : item.Project.Duration;
-                                    decimal differnceDuration = projectDuration - totalDuration;
-                                  }
-                                  <td>@Html.DisplayFor(m => differnceDuration, "Time")</td>
-                              </tr>
-                          </tfoot>
-                          </table>
-                      </td>
-                  </tr>
+            if (item.Interventions is not null && item.Interventions.Count > 0)
+            {
+                decimal totalDuration = 0;
+                <tr>
+                    <td colspan="7">
+                        <table class="table table-sm mb-0">
+                            <caption>@Html.DisplayFor(modelItem => item.Id)</caption>
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            @foreach (var interv in item.Interventions)
+                            {
+                                totalDuration += interv.Duration;
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => interv.InterventionDate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => interv.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => interv.Duration)
+                                    </td>
+                                </tr>
+                            }
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" class="text-end">Total:</td>
+                                    <td>@Html.DisplayFor(m => totalDuration, "Time")</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end">Difference:</td>
+                                    @{
+                                        decimal projectDuration = item.Project is null ? decimal.Zero : item.Project.Duration;
+                                        decimal differnceDuration = projectDuration - totalDuration;
+                                    }
+                                    <td>@Html.DisplayFor(m => differnceDuration, "Time")</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Project Duration: @Html.DisplayFor(m => projectDuration, "Time")
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </td>
+                </tr>
             }
         }
     </tbody>
