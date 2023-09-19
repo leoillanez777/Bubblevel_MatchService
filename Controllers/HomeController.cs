@@ -48,10 +48,10 @@ public class HomeController : Controller {
     }
 
     ViewBag.CurrentSort = sortOrder;
-    ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-    ViewBag.StateSearch = String.IsNullOrEmpty(stateSearch) ? null : stateSearch;
-    ViewBag.CustomerSearch = String.IsNullOrEmpty(customerSearch) ? null : customerSearch;
-    ViewBag.ProjectSearch = String.IsNullOrEmpty(projectSearch) ? null : projectSearch;
+    ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+    ViewBag.StateSearch = string.IsNullOrEmpty(stateSearch) ? null : stateSearch;
+    ViewBag.CustomerSearch = string.IsNullOrEmpty(customerSearch) ? null : customerSearch;
+    ViewBag.ProjectSearch = string.IsNullOrEmpty(projectSearch) ? null : projectSearch;
     CreateViewBagForDevOrProd();
 
     var query = _context.SupportIncident
@@ -122,30 +122,46 @@ public class HomeController : Controller {
 
     // Create CSV 
     var csv = new System.Text.StringBuilder();
-    csv.AppendLine("State;Incident Number;Summary;Customer;Project;Duration Project;Interventions;Comments"); // Header
+    csv.AppendLine(BuildHeader());
 
     foreach (var row in incidents) {
-      var commonData = $"{row.State.GetDisplayName()};{row.Id};{row.Summary};" +
-        $"{(row.Customer is not null ? row.Customer.Name: string.Empty)};" +
-        $"{(row.Project is not null ? row.Project.Name : string.Empty)};" +
-        $"{(row.Project is not null ? row.Project.Duration : decimal.Zero)}";
 
-      var interventionsData = row.Interventions?.Select(i => new
+      IncidentCsvRecord csvRecord = new(row.Id.ToString()) {
+        State = row.State.GetDisplayName(),
+        Summary = row.Summary,
+        Customer = row.Customer?.Name ?? string.Empty,
+        Project = row.Project?.Name ?? string.Empty,
+        ProjectDuration = (row.Project?.Duration ?? decimal.Zero).ToString(),
+      };
+      //Add comments.
+      var commentsData = row.Comments?.Select(c => c.Text).ToList();
+      csvRecord.Comments = string.Join(";", commentsData ?? new List<string>());
+
+      var interventionsData = row.Interventions?.Select(i => new InterventionList
       {
-        date = i.InterventionDate,
-        description = i.Description,
-        duration = i.Duration
+        Date = i.InterventionDate.ToString(),
+        Description = i.Description,
+        Duration = i.Duration.ToString()
       });
-
-      var commentsData = row.Comments?.Select(c => new
-      {
-        summary = c.Text
-      });
-
-      var interventionsJson = JsonSerializer.Serialize(interventionsData);
-      var commentsJson = JsonSerializer.Serialize(commentsData);
-
-      csv.AppendLine($"{commonData};{interventionsJson};{commentsJson}");
+      
+      if (interventionsData != null) {
+        bool firstIntervention = true;
+        foreach (var i in interventionsData!) {
+          if (firstIntervention) {
+            firstIntervention = false;
+            csvRecord.ConCatIntervention(i);
+            csv.AppendLine(csvRecord.Format());
+          }
+          else {
+            IncidentCsvRecord csvIntervention = new(row.Id.ToString());
+            csvIntervention.ConCatIntervention(i);
+            csv.AppendLine(csvIntervention.Format());
+          }
+        }
+      }
+      else {
+        csv.AppendLine(csvRecord.Format());
+      }
     }
 
     // Setear headers para que se descargue como CSV
@@ -289,6 +305,64 @@ public class HomeController : Controller {
   {
     public string Value { get; set; } = null!;
     public string Text { get; set; } = null!;
+  }
+
+  public class InterventionList
+  {
+    public string Date { get; set; } = null!;
+    public string Description { get; set; } = null!;
+    public string Duration { get; set; } = null!;
+  }
+
+  public class CsvColumns {
+    public const string IncidentNumber = "Incident Number";
+    public const string State = "State";
+    public const string Summary = "Summary";
+    public const string Customer = "Customer";
+    public const string Project = "Project";
+    public const string ProjectDuration = "Project Duration";
+    public const string InterventionDate = "Intervention Date";
+    public const string InterventionDescription = "Intervention Description";
+    public const string InterventionDuration = "Intervention Duration";
+    public const string Comments = "Comments";
+  }
+
+  public class IncidentCsvRecord {
+    public string IncidentNumber { get; set; } = string.Empty;
+    public string State { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
+    public string Customer { get; set; } = string.Empty;
+    public string Project { get; set; } = string.Empty;
+    public string ProjectDuration { get; set; } = string.Empty;
+    public string InterventionDate { get; set; } = string.Empty;
+    public string InterventionDescription { get; set; } = string.Empty;
+    public string InterventionDuration { get; set; } = string.Empty;
+    public string Comments { get; set; } = string.Empty;
+
+    public IncidentCsvRecord(string id)
+    {
+      IncidentNumber = id;
+    }
+
+    public void ConCatIntervention(InterventionList list)
+    {
+      InterventionDate = list.Date;
+      InterventionDescription = list.Description;
+      InterventionDuration = list.Duration;
+    }
+
+    public string Format()
+    {
+      return $"{IncidentNumber};{State};{Summary};{Customer};{Project};{ProjectDuration};" +
+        $"{InterventionDate};{InterventionDescription};{InterventionDuration};{Comments}";
+    }
+  }
+
+  private static string BuildHeader()
+  {
+    return $"{CsvColumns.IncidentNumber};{CsvColumns.State};{CsvColumns.Summary};" +
+      $"{CsvColumns.Customer};{CsvColumns.Project};{CsvColumns.ProjectDuration};{CsvColumns.InterventionDate};" +
+      $"{CsvColumns.InterventionDescription};{CsvColumns.InterventionDuration};{CsvColumns.Comments}";
   }
 }
 
