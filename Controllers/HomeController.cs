@@ -9,11 +9,12 @@ using X.PagedList;
 using System.Globalization;
 using Microsoft.CodeAnalysis;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Bubblevel_MatchService.Controllers;
 
 [Authorize]
-public class HomeController : Controller {
+public partial class HomeController : Controller {
 
   private readonly ILogger<HomeController> _logger;
   private readonly ApplicationDbContext _context;
@@ -128,23 +129,23 @@ public class HomeController : Controller {
 
       IncidentCsvRecord csvRecord = new(row.Id.ToString()) {
         State = row.State.GetDisplayName(),
-        Summary = row.Summary,
+        Summary = MyRegex().Replace(row.Summary, " "),
         Customer = row.Customer?.Name ?? string.Empty,
         Project = row.Project?.Name ?? string.Empty,
         ProjectDuration = (row.Project?.Duration ?? decimal.Zero).ToString(),
       };
       //Add comments.
-      var commentsData = row.Comments?.Select(c => c.Text).ToList();
+      var commentsData = row.Comments?.Select(c => MyRegex().Replace(c.Text, " ")).ToList();
       csvRecord.Comments = string.Join(";", commentsData ?? new List<string>());
 
       var interventionsData = row.Interventions?.Select(i => new InterventionList
       {
         Date = i.InterventionDate.ToString(),
-        Description = i.Description,
+        Description = MyRegex().Replace(i.Description, " "),
         Duration = i.Duration.ToString()
       });
-      
-      if (interventionsData != null) {
+
+      if (interventionsData != null && interventionsData.Any()) {
         bool firstIntervention = true;
         foreach (var i in interventionsData!) {
           if (firstIntervention) {
@@ -364,5 +365,8 @@ public class HomeController : Controller {
       $"{CsvColumns.Customer};{CsvColumns.Project};{CsvColumns.ProjectDuration};{CsvColumns.InterventionDate};" +
       $"{CsvColumns.InterventionDescription};{CsvColumns.InterventionDuration};{CsvColumns.Comments}";
   }
+
+  [GeneratedRegex("[\\n\\t\\r]")]
+  private static partial Regex MyRegex();
 }
 
