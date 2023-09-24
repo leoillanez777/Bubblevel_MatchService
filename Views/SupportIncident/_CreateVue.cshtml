@@ -2,7 +2,8 @@
     const { createApp, ref, watch, onMounted, nextTick } = Vue
     const { createVuetify } = Vuetify
 
-    const pathString = window.location.origin + "@ViewBag.UrlClient"
+    //const pathString = window.location.origin + "@ViewBag.UrlClient"
+    const pathString = '@Context.Request.Scheme' + '://' + '@Context.Request.Host' + '@Url.Content("~/")' + '@ViewBag.UrlClient';
 
     const vuetify = createVuetify()
 
@@ -44,7 +45,7 @@
                 const results = await event
                 console.log(results)
                 if (results.valid) {
-                    const url = `${pathString}/Customer/CreateCustomer`
+                    const url = `${pathString}Customer/CreateCustomer`
                     const data = {
                         name: name.value,
                         email: email.value
@@ -90,7 +91,7 @@
 
             const querySelections = (v) => {
                 loading.value = true
-                const url = `${pathString}/Customer/GetCustomer?filter=${v}`
+                const url = `${pathString}Customer/GetCustomer?filter=${v}`
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
