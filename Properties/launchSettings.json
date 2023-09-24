@@ -19,6 +19,7 @@
     },
     "https": {
       "commandName": "Project",
+      "commandLineArgs": "/prueba",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7215;http://localhost:5260",
       "environmentVariables": {

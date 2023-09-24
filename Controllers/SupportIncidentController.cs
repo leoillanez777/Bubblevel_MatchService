@@ -12,13 +12,11 @@ public class SupportIncidentController : Controller {
 
   private readonly ApplicationDbContext _context;
   private readonly IEmailSender _email;
-  private readonly IWebHostEnvironment _env;
 
-  public SupportIncidentController(ApplicationDbContext context, IEmailSender email, IWebHostEnvironment env)
+  public SupportIncidentController(ApplicationDbContext context, IEmailSender email)
   {
     _context = context;
     _email = email;
-    _env = env;
   }
 
   // GET: SupportIncident
@@ -91,7 +89,6 @@ public class SupportIncidentController : Controller {
   public IActionResult Create(string sourceView)
   {
     ViewBag.SourceView = sourceView;
-    CreateViewBagForDevOrProd();
 
     return View();
   }
@@ -143,8 +140,6 @@ public class SupportIncidentController : Controller {
       }
       
     }
-
-    CreateViewBagForDevOrProd();
 
     return View(supportIncident);
   }
@@ -296,7 +291,6 @@ public class SupportIncidentController : Controller {
   public async Task<IActionResult> AssociateProject(int? id, string sourceView)
   {
     ViewBag.SourceView = sourceView;
-    CreateViewBagForDevOrProd();
 
     if (id == null || _context.Project == null) {
       return NotFound();
@@ -342,8 +336,6 @@ public class SupportIncidentController : Controller {
       }
 
     }
-
-    CreateViewBagForDevOrProd();
 
     return View(supportIncident);
   }
@@ -502,13 +494,4 @@ public class SupportIncidentController : Controller {
     return (_context.SupportIncident?.Any(e => e.Id == id)).GetValueOrDefault();
   }
 
-  private void CreateViewBagForDevOrProd()
-  {
-    if (_env.IsDevelopment()) {
-      ViewBag.UrlClient = "";
-    }
-    else {
-      ViewBag.UrlClient = "/bubblevel";
-    }
-  }
 }

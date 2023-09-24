@@ -13,12 +13,10 @@ namespace Bubblevel_MatchService.Controllers;
 
 public class ProjectController : Controller {
   private readonly ApplicationDbContext _context;
-  private readonly IWebHostEnvironment _env;
 
-  public ProjectController(ApplicationDbContext context, IWebHostEnvironment env)
+  public ProjectController(ApplicationDbContext context)
   {
     _context = context;
-    _env = env;
   }
 
   // GET: Project
@@ -89,7 +87,6 @@ public class ProjectController : Controller {
   [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectAdd")]
   public IActionResult Create()
   {
-    CreateViewBagForDevOrProd();
     return View();
   }
 
@@ -101,7 +98,6 @@ public class ProjectController : Controller {
   [Authorize(Roles = "SuperAdmin,Admin,Project,ProjectAdd")]
   public async Task<IActionResult> Create([Bind("Id,Name,IntialDate,Duration,Closed")] Project project)
   {
-    CreateViewBagForDevOrProd();
     if (ModelState.IsValid) {
       _context.Add(project);
       await _context.SaveChangesAsync();
@@ -123,8 +119,6 @@ public class ProjectController : Controller {
     if (project == null) {
       return NotFound();
     }
-
-    CreateViewBagForDevOrProd();
 
     return View(project);
   }
@@ -156,8 +150,6 @@ public class ProjectController : Controller {
       }
       return RedirectToAction(nameof(Index));
     }
-
-    CreateViewBagForDevOrProd();
 
     return View(project);
   }
@@ -202,13 +194,4 @@ public class ProjectController : Controller {
     return (_context.Project?.Any(e => e.Id == id)).GetValueOrDefault();
   }
 
-  private void CreateViewBagForDevOrProd()
-  {
-    if (_env.IsDevelopment()) {
-      ViewBag.UrlClient = "";
-    }
-    else {
-      ViewBag.UrlClient = "/bubblevel";
-    }
-  }
 }

@@ -73,11 +73,13 @@ if (!app.Environment.IsDevelopment())
     //app.UseHsts();
 }
 else {
+  
   using var scope = app.Services.CreateScope();
   var services = scope.ServiceProvider;
   await SeedData.InitializeAsync(services);
 }
-
+// Configura la ruta base de la aplicación
+app.UsePathBase("/prueba");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
