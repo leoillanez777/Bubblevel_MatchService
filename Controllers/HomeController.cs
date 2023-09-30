@@ -18,13 +18,11 @@ public partial class HomeController : Controller {
 
   private readonly ILogger<HomeController> _logger;
   private readonly ApplicationDbContext _context;
-  private readonly IWebHostEnvironment _env;
 
-  public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment env)
+  public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
   {
     _logger = logger;
     _context = context;
-    _env = env;
   }
 
   public IActionResult Index()
@@ -53,7 +51,6 @@ public partial class HomeController : Controller {
     ViewBag.StateSearch = string.IsNullOrEmpty(stateSearch) ? null : stateSearch;
     ViewBag.CustomerSearch = string.IsNullOrEmpty(customerSearch) ? null : customerSearch;
     ViewBag.ProjectSearch = string.IsNullOrEmpty(projectSearch) ? null : projectSearch;
-    CreateViewBagForDevOrProd();
 
     var query = _context.SupportIncident
       .Include(s => s.Customer)
@@ -189,16 +186,6 @@ public partial class HomeController : Controller {
   public IActionResult Error()
   {
     return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-  }
-
-  private void CreateViewBagForDevOrProd()
-  {
-    if (_env.IsDevelopment()) {
-      ViewBag.UrlClient = "";
-    }
-    else {
-      ViewBag.UrlClient = "/bubblevel";
-    }
   }
 
   #region DashBoard

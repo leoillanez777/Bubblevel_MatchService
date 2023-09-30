@@ -5,7 +5,7 @@
 
     createApp({
         setup() {
-            const pathString = window.location.origin + "@ViewBag.UrlClient"
+            const pathString = '@Context.Request.Scheme' + '://' + '@Context.Request.Host' + '@Url.Content("~/")';
             const modelValueCustomer = @Json.Serialize(ViewBag.CustomerSearch)
             const modelValueProject = @Json.Serialize(ViewBag.ProjectSearch)
             const modelValueState = @Json.Serialize(ViewBag.StateSearch)
@@ -33,7 +33,7 @@
 
             const queryCustomer = (v) => {
                 loading.value = true
-                const url = `${pathString}/Customer/GetCustomer?filter=${v}`
+                const url = `${pathString}Customer/GetCustomer?filter=${v}`
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
@@ -59,7 +59,7 @@
 
             const queryProject = (v) => {
                 loading.value = true
-                const url = `${pathString}/Project/GetProject?filter=${v}`
+                const url = `${pathString}Project/GetProject?filter=${v}`
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
@@ -80,7 +80,7 @@
 
             const queryState = () => {
                 loading.value = true
-                const url = `${pathString}/Home/GetState`
+                const url = `${pathString}Home/GetState`
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
